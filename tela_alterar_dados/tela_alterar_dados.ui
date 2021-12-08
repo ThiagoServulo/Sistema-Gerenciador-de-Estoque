@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>411</width>
-    <height>351</height>
+    <height>172</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -24,53 +24,6 @@
     <normaloff>icone_login.png</normaloff>icone_login.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="group_box_alterar">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>50</y>
-      <width>371</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="title">
-     <string notr="true">Escolha o que deseja alterar</string>
-    </property>
-    <widget class="QCheckBox" name="check_box_alterar_senha">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>70</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string notr="true">Senha</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="check_box_alterar_cargo">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>30</y>
-       <width>70</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string notr="true">Cargo</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QLineEdit" name="texto_matricula">
     <property name="geometry">
      <rect>
@@ -115,12 +68,12 @@
    </widget>
    <widget class="QGroupBox" name="group_box_alterar_cargo">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>120</y>
+      <y>50</y>
       <width>371</width>
       <height>61</height>
      </rect>
@@ -173,128 +126,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="group_box_senha">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>190</y>
-      <width>371</width>
-      <height>91</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="title">
-     <string notr="true">Alterar senha</string>
-    </property>
-    <widget class="QLabel" name="label_senha_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>61</y>
-       <width>131</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true">Confirmar senha:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_senha_1">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>61</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true">Senha:</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="texto_senha_1">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>29</y>
-       <width>211</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-       <strikeout>false</strikeout>
-       <stylestrategy>PreferDefault</stylestrategy>
-       <kerning>true</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
-     <property name="maxLength">
-      <number>20</number>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-     <property name="placeholderText">
-      <string notr="true"/>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="texto_senha_2">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>60</y>
-       <width>211</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-       <strikeout>false</strikeout>
-       <stylestrategy>PreferDefault</stylestrategy>
-       <kerning>true</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
-     <property name="maxLength">
-      <number>20</number>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-     <property name="placeholderText">
-      <string notr="true"/>
-     </property>
-    </widget>
-   </widget>
    <widget class="QPushButton" name="botao_login">
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>290</y>
+      <y>120</y>
       <width>141</width>
       <height>41</height>
      </rect>

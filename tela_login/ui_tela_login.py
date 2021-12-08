@@ -3,6 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2 import QtWidgets
 
+
 class Ui_tela_login(object):
     def setupUi(self, tela_login):
         if not tela_login.objectName():
