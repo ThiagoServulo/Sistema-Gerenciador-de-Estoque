@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 import sys
-from Events import Eventos
+from Bibliotecas.Events import Eventos
 
 
 if __name__ == "__main__":

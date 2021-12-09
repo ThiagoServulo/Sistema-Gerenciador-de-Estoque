@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2 import QtWidgets
+import sys
 
 
 class Ui_tela_login(object):
@@ -66,3 +67,6 @@ class CriarTelaLogin(QtWidgets.QMainWindow, Ui_tela_login):
     def __init__(self):
         super(CriarTelaLogin, self).__init__()
         self.setupUi(self)
+
+    def closeEvent(self, event):
+        sys.exit()
