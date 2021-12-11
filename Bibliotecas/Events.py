@@ -24,9 +24,7 @@ class Eventos:
 
     def iniciar(self):
         """Função que inicia a aplicação apresentando a janela de login"""
-        self.tela_login.texto_senha.setText('')
-        self.tela_login.texto_matricula.setText('')
-        self.tela_login.show()
+        self.tela_login.mostrar_tela()
     # iniciar
 
     def login(self):
@@ -39,14 +37,7 @@ class Eventos:
 
     def abrir_tela_criar_conta(self):
         """Função que abre a tela de cadastro de usuário"""
-        self.tela_criar_conta.texto_usuario.setText('')
-        self.tela_criar_conta.texto_email.setText('')
-        self.tela_criar_conta.texto_senha_1.setText('')
-        self.tela_criar_conta.texto_senha_2.setText('')
-        self.tela_criar_conta.radio_button_gerente.setChecked(False)
-        self.tela_criar_conta.radio_button_vendedor.setChecked(False)
-        self.tela_criar_conta.radio_button_entregador.setChecked(False)
-        self.tela_criar_conta.show()
+        self.tela_criar_conta.mostrar_tela()
         self.tela_login.hide()
     # abrir_tela_criar_conta
 
