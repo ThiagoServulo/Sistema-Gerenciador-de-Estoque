@@ -1,7 +1,6 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from PySide2 import QtWidgets
 
 
 class Ui_tela_criar_conta(object):
@@ -96,7 +95,7 @@ class Ui_tela_criar_conta(object):
     # setupUi
 
 
-class CriarTelaCriarConta(QtWidgets.QMainWindow, Ui_tela_criar_conta):
+class CriarTelaCriarConta(QMainWindow, Ui_tela_criar_conta):
     def __init__(self):
         super(CriarTelaCriarConta, self).__init__()
         self.setupUi(self)

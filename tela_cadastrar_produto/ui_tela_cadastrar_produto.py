@@ -1,7 +1,6 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from PySide2 import QtWidgets
 
 
 class Ui_tela_cadastrar_produto(object):
@@ -89,11 +88,10 @@ class Ui_tela_cadastrar_produto(object):
         self.botao_cadastrar_produto.setGeometry(QRect(110, 220, 201, 41))
         self.botao_cadastrar_produto.setFont(font)
         self.botao_cadastrar_produto.setText(u"Cadastrar Produto")
-
     # setupUi
 
 
-class CriarTelaCadastrarProduto(QtWidgets.QMainWindow, Ui_tela_cadastrar_produto):
+class CriarTelaCadastrarProduto(QMainWindow, Ui_tela_cadastrar_produto):
     def __init__(self):
         super(CriarTelaCadastrarProduto, self).__init__()
         self.setupUi(self)

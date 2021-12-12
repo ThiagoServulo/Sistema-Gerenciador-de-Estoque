@@ -3,8 +3,11 @@ import os
 from Bibliotecas.utils import *
 
 
-def conectar_servidor():
-    """Função para conectar ao servidor de banco de dados"""
+def conectar_servidor() -> sqlite3.Connection:
+    """
+    Função para conectar ao servidor de banco de dados
+    :return: retorna a conexão ao banco de dados
+    """
     if not os.path.exists('gerenciador_estoque.bd'):
         cria_tabela_tipos_cargos()
 
@@ -16,20 +19,23 @@ def conectar_servidor():
         email TEXT NOT NULL,
         senha TEXT NOT NULL,
         cargo INTEGER NOT NULL);"""
-    )
+                 )
 
     return conn
 # conectar_servidor
 
 
-def cria_tabela_tipos_cargos():
-    """Função para criar e inicializar valores da tabela tipos_cargos"""
+def cria_tabela_tipos_cargos() -> None:
+    """
+    Função para criar e inicializar valores da tabela tipos_cargos
+    :return: None
+    """
     conn = sqlite3.connect('gerenciador_estoque.bd')
 
     conn.execute("""CREATE TABLE IF NOT EXISTS tipos_cargos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cargo TEXT NOT NULL);"""
-    )
+                 )
 
     cursor = conn.cursor()
     cursor.execute(f"INSERT INTO tipos_cargos (cargo) VALUES ('Entregador')")
@@ -41,8 +47,18 @@ def cria_tabela_tipos_cargos():
 # cria_tabela_tipos_cargos
 
 
-def inserir_usuario(nome, email, senha, cargo):
-    """Função para inserir um usuário"""
+def inserir_usuario(nome: str, email: str, senha: str, cargo: int) -> tuple[bool, str]:
+    """
+    Função para cadastrar um novo usuário no banco de dados
+    :param nome: nome informado pelo usuário para cadastro
+    :param email: email informado pelo usuário para cadastro
+    :param senha: senha informada pelo usuário para cadastro
+    :param cargo: cargo informado pelo usuário para cadastro
+    :return: tuple(status, mensagem)
+                status: True - se o usuário for cadastrado com sucesso
+                        False - se ocorrer algum problema no cadastro
+                mensagem: mensagem de texto para ser apresentada ao usuário indicando sucesso ou falha no cadastro
+    """
     ret = verificar_usuario_existe(nome)
     if not ret[0]:
         return ret
@@ -65,13 +81,17 @@ def inserir_usuario(nome, email, senha, cargo):
 # inserir_usuario
 
 
-def desconectar_servidor(conn):
-    """Função para desconectar do servidor de banco de dados"""
+def desconectar_servidor(conn: sqlite3.Connection) -> None:
+    """
+    Função para desconectar do servidor de banco de dados
+    :param conn: conexão ao servidor de banco de dados
+    :return: None
+    """
     conn.close()
 # desconectar_servidor
 
 
-def verificar_usuario_existe(nome):
+def verificar_usuario_existe(nome: str) -> tuple[bool, str]:
     """Função para verificar se o usuário já está cadastrado no banco"""
     conn = conectar_servidor()
     cursor = conn.cursor()
@@ -100,3 +120,20 @@ def num_matricula_usuario(nome):
     matricula = converter_id_para_matricula(usuario[0][0])
     return matricula
 # num_matricula_usuario
+
+
+def verificar_dados_usuario(matricula, senha_login):
+    """Função que verifica os dados do usuário para login no sistema"""
+    conn = conectar_servidor()
+    cursor = conn.cursor()
+    id_usuario = converter_matricula_para_id(matricula)
+    cursor.execute(f"SELECT senha FROM usuarios WHERE id={id_usuario}")
+    usuario = cursor.fetchall()
+
+    if len(usuario) <= 0:
+        return -1
+
+    senha_criptografada = usuario[0][0]
+    ret = verificar_senha(senha_login, senha_criptografada)
+    return ret
+# verificar_dados_usuario

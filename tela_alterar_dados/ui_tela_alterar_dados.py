@@ -1,7 +1,6 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from PySide2 import QtWidgets
 
 
 class Ui_tela_alterar_dados(object):
@@ -58,7 +57,7 @@ class Ui_tela_alterar_dados(object):
     # setupUi
 
 
-class CriarTelaAlterarDados(QtWidgets.QMainWindow, Ui_tela_alterar_dados):
+class CriarTelaAlterarDados(QMainWindow, Ui_tela_alterar_dados):
     def __init__(self):
         super(CriarTelaAlterarDados, self).__init__()
         self.setupUi(self)

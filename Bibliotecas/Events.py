@@ -22,31 +22,55 @@ class Eventos:
         self.tela_cadastrar_produto.botao_cadastrar_produto.clicked.connect(self.cadastrar_produto)
     # __init__
 
-    def iniciar(self):
-        """Função que inicia a aplicação apresentando a janela de login"""
+    def iniciar(self) -> None:
+        """
+        Função que inicia a aplicação apresentando a janela de login
+        :return: None
+        """
         self.tela_login.mostrar_tela()
     # iniciar
 
-    def login(self):
-        """Função responsável por checar se os dados do usuário são válidos para este acessar o sistema"""
+    def login(self) -> None:
+        """
+        Função responsável por checar se os dados do usuário são válidos para este acessar o sistema
+        :return: None
+        """
         if len(self.tela_login.texto_matricula.text()) > 0 and len(self.tela_login.texto_senha.text()) > 0:
-            print('entrar')
+            try:
+                matricula = int(self.tela_login.texto_matricula.text())
+            except ValueError:
+                QMessageBox.critical(self.tela_login, 'Erro', 'Matrícula inválida')
+                return
+            ret = verificar_dados_usuario(matricula, self.tela_login.texto_senha.text())
+            if ret == -1:
+                QMessageBox.critical(self.tela_login, 'Erro', 'Matrícula não encontrada')
+            elif ret == 0:
+                QMessageBox.critical(self.tela_login, 'Erro', 'Senha incorreta')
+            elif ret == 1:
+                # TODO: Chamar tela principal respeitando o cargo informado
+                print('entra meu amigo')
         else:
             QMessageBox.critical(self.tela_login, 'Erro', 'Usuário ou senha inválido')
     # login
 
-    def abrir_tela_criar_conta(self):
-        """Função que abre a tela de cadastro de usuário"""
+    def abrir_tela_criar_conta(self) -> None:
+        """
+        Função que abre a tela de cadastro de usuário
+        :return: None
+        """
         self.tela_criar_conta.mostrar_tela()
         self.tela_login.hide()
     # abrir_tela_criar_conta
 
-    def criar_conta(self):
-        """Função responsável por criar um novo usuário no banco de dados"""
+    def criar_conta(self) -> None:
+        """
+        Função responsável por criar um novo usuário no banco de dados
+        :return: None
+        """
         if len(self.tela_criar_conta.texto_usuario.text()) < 2:
             QMessageBox.critical(self.tela_criar_conta, 'Erro', 'Usuário inválido: O nome do usuário é muito pequeno')
         elif len(self.tela_criar_conta.texto_email.text()) < 5 or '@' not in self.tela_criar_conta.texto_email.text():
-           QMessageBox.critical(self.tela_criar_conta, 'Erro', 'Email inválido')
+            QMessageBox.critical(self.tela_criar_conta, 'Erro', 'Email inválido')
         elif len(self.tela_criar_conta.texto_senha_1.text()) < 4:
             QMessageBox.critical(self.tela_criar_conta, 'Erro', 'Senha inválida: A senha deve ter pelo menos 4 caracteres')
         elif self.tela_criar_conta.texto_senha_1.text() != self.tela_criar_conta.texto_senha_2.text():
@@ -76,8 +100,11 @@ class Eventos:
                     self.iniciar()
     # criar_conta
 
-    def cadastrar_produto(self):
-        """Função responsável por acrescentar os produtos no banco de dados"""
+    def cadastrar_produto(self) -> None:
+        """
+        Função responsável por acrescentar os produtos no banco de dados
+        :return: None
+        """
         if len(self.tela_cadastrar_produto.texto_descricao.text()) < 1:
             QMessageBox.critical(self.tela_cadastrar_produto, 'Erro', 'Insira a descrição do produto')
         elif len(self.tela_cadastrar_produto.texto_marca.text()) < 1:
@@ -96,8 +123,11 @@ class Eventos:
             print('Sucesso')
     # cadastrar_produto
 
-    def alterar_dados_usuario(self):
-        """Função que permite fazer alterações nos dados do usuário"""
+    def alterar_dados_usuario(self) -> None:
+        """
+        Função que permite fazer alterações nos dados do usuário
+        :return: None
+        """
         if len(self.tela_alterar_dados.texto_matricula.text()) < 1:
             QMessageBox.critical(self.tela_alterar_dados, 'Erro', 'Insira a matrícula do funcionário')
         elif not (self.tela_alterar_dados.radio_button_gerente.isChecked() or
