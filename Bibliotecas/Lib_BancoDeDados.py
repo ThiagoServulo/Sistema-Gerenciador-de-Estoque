@@ -92,7 +92,14 @@ def desconectar_servidor(conn: sqlite3.Connection) -> None:
 
 
 def verificar_usuario_existe(nome: str) -> tuple[bool, str]:
-    """Função para verificar se o usuário já está cadastrado no banco"""
+    """
+    Função para verificar se o usuário já está cadastrado no banco
+    :param nome: nome do usuário a ser verificado
+    :return: tuple(status, mensagem)
+                status: True - se o usuário já estiver cadastrado
+                        False - se o usuário não estiver cadastrado
+                mensagem: mensagem de texto para ser apresentada ao usuário indicando o status do usuário
+    """
     conn = conectar_servidor()
     cursor = conn.cursor()
 
@@ -110,20 +117,30 @@ def verificar_usuario_existe(nome: str) -> tuple[bool, str]:
 # verificar_usuario_existe
 
 
-def num_matricula_usuario(nome):
-    """Função que retorna o número da matrícula d eum usuário"""
+def num_matricula_usuario(nome: str) -> int:
+    """
+    Função que retorna o número da matrícula d eum usuário
+    :param nome: nome do usuário a ser consultado
+    :return: retorna o número da matrícula do usuário informado
+    """
     conn = conectar_servidor()
     cursor = conn.cursor()
 
     cursor.execute(f"SELECT id FROM usuarios WHERE nome='{nome}'")
     usuario = cursor.fetchall()
-    matricula = converter_id_para_matricula(usuario[0][0])
-    return matricula
+    return converter_id_para_matricula(usuario[0][0])
 # num_matricula_usuario
 
 
-def verificar_dados_usuario(matricula, senha_login):
-    """Função que verifica os dados do usuário para login no sistema"""
+def verificar_dados_usuario(matricula: int, senha_login: str) -> int:
+    """
+    Função que verifica os dados do usuário para login no sistema
+    :param matricula: matrícula do usuário a ser verificado
+    :param senha_login: senha do usuário a ser verificado
+    :return: -1 - se o usuário não existir
+              0 - se o usuário existir mas a senha infromada estiver incorreta
+              1 - se o usuário existir e a senha infromada estiver correta
+    """
     conn = conectar_servidor()
     cursor = conn.cursor()
     id_usuario = converter_matricula_para_id(matricula)
@@ -134,6 +151,5 @@ def verificar_dados_usuario(matricula, senha_login):
         return -1
 
     senha_criptografada = usuario[0][0]
-    ret = verificar_senha(senha_login, senha_criptografada)
-    return ret
+    return verificar_senha(senha_login, senha_criptografada)
 # verificar_dados_usuario
