@@ -74,9 +74,9 @@ def inserir_usuario(nome: str, email: str, senha: str, cargo: int) -> tuple[bool
 
     if cursor.rowcount == 1:
         matricula = num_matricula_usuario(nome)
-        ret = (True, f'O usuário {nome} foi adicionado com sucesso.\nNúmero de matrícula {matricula}')
+        ret = (True, f"<font face='MS Shell Dlg 2' size=4>O usuário {nome} foi adicionado com sucesso.\nNúmero de matrícula: {matricula}</font>")
     else:
-        ret = (False, f'Erro ao adicionar o usuário: {nome}')
+        ret = (False, f"<font face='MS Shell Dlg 2'size=4>Erro ao adicionar o usuário: {nome}</font>")
     return ret
 # inserir_usuario
 
@@ -108,7 +108,7 @@ def verificar_usuario_existe(nome: str) -> tuple[bool, str]:
 
     if len(usuario) > 0:
         matricula = converter_id_para_matricula(usuario[0][0])
-        ret = (False, f"O usuário {nome} já está castrado.\nNúmero de matrícula {matricula}")
+        ret = (False, f"<font face='MS Shell Dlg 2' size=4>O usuário {nome} já está castrado.\nNúmero de matrícula: {matricula}</font>")
     else:
         ret = (True, '')
 
@@ -153,3 +153,39 @@ def verificar_dados_usuario(matricula: int, senha_login: str) -> int:
     senha_criptografada = usuario[0][0]
     return verificar_senha(senha_login, senha_criptografada)
 # verificar_dados_usuario
+
+
+def cargo_usuario(matricula: int) -> int:
+    """
+    Função que retorna o código do cargo do usuário
+    :param matricula: matrícula do usuário a ser consultado
+    :return: -1 - se o usuário não for econtrado
+             1  - se o usuário for entregador
+             2  - se o usuário for vendedor
+             3  - se o usuário for gerente
+    """
+    conn = conectar_servidor()
+    cursor = conn.cursor()
+    id_usuario = converter_matricula_para_id(matricula)
+    cursor.execute(f"SELECT cargo FROM usuarios WHERE id={id_usuario}")
+
+    usuario = cursor.fetchall()
+
+    if len(usuario) <= 0:
+        return -1
+
+    return usuario[0][0]
+# cargo_usuario
+
+
+def data_atual_banco() -> str:
+    conn = conectar_servidor()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT strftime('%d/%m/%Y','now')")
+    data = cursor.fetchall()
+
+    if len(data) <= 0:
+        return ''
+
+    return data[0][0]
+# data_atual_banco

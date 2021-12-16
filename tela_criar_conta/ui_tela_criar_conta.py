@@ -41,6 +41,7 @@ class Ui_tela_criar_conta(object):
         self.botao_criar_conta.setGeometry(QRect(140, 210, 161, 41))
         self.botao_criar_conta.setFont(font)
         self.botao_criar_conta.setText(u"Criar conta")
+        self.botao_criar_conta.setShortcut("Enter")
 
         self.texto_usuario = QLineEdit(tela_criar_conta)
         self.texto_usuario.setGeometry(QRect(160, 19, 261, 21))

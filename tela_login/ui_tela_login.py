@@ -32,6 +32,7 @@ class Ui_tela_login(object):
         self.botao_login.setGeometry(QRect(180, 90, 141, 41))
         self.botao_login.setFont(font)
         self.botao_login.setText(u"Login")
+        self.botao_login.setShortcut("Enter")
 
         self.label_matricula = QLabel(tela_login)
         self.label_matricula.setGeometry(QRect(20, 20, 71, 16))

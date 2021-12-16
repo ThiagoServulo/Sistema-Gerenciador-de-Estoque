@@ -35,7 +35,7 @@
        </font>
       </property>
       <property name="title">
-       <string>Vendas:</string>
+       <string>Vendas</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="4" column="1">
@@ -385,16 +385,33 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuUsu_rios">
+   <widget class="QMenu" name="menu_usuarios">
     <property name="title">
      <string>Usuários</string>
     </property>
-    <addaction name="actionCadastrar"/>
-    <addaction name="actionAlterar"/>
+    <addaction name="action_cadastrar"/>
+    <addaction name="action_alterar"/>
    </widget>
-   <addaction name="menuUsu_rios"/>
+   <widget class="QMenu" name="menu_relatorios_vendas">
+    <property name="title">
+     <string>Relatórios Vendas</string>
+    </property>
+    <addaction name="action_relatorio_total"/>
+    <addaction name="action_relatorio_dia"/>
+   </widget>
+   <widget class="QMenu" name="menu_relatorio_estoque">
+    <property name="title">
+     <string>Relatório Estoque</string>
+    </property>
+    <addaction name="action_relatorio_completo"/>
+    <addaction name="action_relatorio_customizado"/>
+    <addaction name="action_relatorio_quantidade"/>
+   </widget>
+   <addaction name="menu_usuarios"/>
+   <addaction name="menu_relatorios_vendas"/>
+   <addaction name="menu_relatorio_estoque"/>
   </widget>
-  <action name="actionCadastrar">
+  <action name="action_cadastrar">
    <property name="text">
     <string>Cadastrar</string>
    </property>
@@ -402,12 +419,37 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="actionAlterar">
+  <action name="action_alterar">
    <property name="text">
     <string>Alterar</string>
    </property>
    <property name="shortcut">
     <string>F2</string>
+   </property>
+  </action>
+  <action name="action_relatorio_total">
+   <property name="text">
+    <string>Relatório Total</string>
+   </property>
+  </action>
+  <action name="action_relatorio_dia">
+   <property name="text">
+    <string>Relatório Dia</string>
+   </property>
+  </action>
+  <action name="action_relatorio_completo">
+   <property name="text">
+    <string>Relaório Completo</string>
+   </property>
+  </action>
+  <action name="action_relatorio_customizado">
+   <property name="text">
+    <string>Relatório por Produto</string>
+   </property>
+  </action>
+  <action name="action_relatorio_quantidade">
+   <property name="text">
+    <string>Relatório por Quantidade</string>
    </property>
   </action>
  </widget>
