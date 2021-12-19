@@ -275,5 +275,5 @@ class CriarPrincipal(QMainWindow, Ui_tela_principal):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = CriarPrincipal()
-    window.mostrar_tela(2)
+    window.mostrar_tela(3)
     sys.exit(app.exec_())

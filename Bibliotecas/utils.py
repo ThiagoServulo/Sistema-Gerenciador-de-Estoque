@@ -44,3 +44,20 @@ def verificar_senha(senha_login: str, senha_cadastrada: str) -> int:
     else:
         return 0
 # verificar_senha
+
+
+def converte_codigo_cargo_para_nome(codigo_cargo: int) -> str:
+    """
+    Função que converte o código do cargo para o nome do cargo
+    :param codigo_cargo: código do cargo a ser convertido
+    :return: 'Entregador' - se o código do cargo for 1
+              'Vendedor'  - se o código do cargo for 2
+              'Gerente'   - se o código do cargo for 3
+    """
+    if codigo_cargo == 1:
+        return 'Entregador'
+    elif codigo_cargo == 2:
+        return 'Vendedor'
+    elif codigo_cargo == 3:
+        return 'Gerente'
+# converte_codigo_cargo_para_nome
