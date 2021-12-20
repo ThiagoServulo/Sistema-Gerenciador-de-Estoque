@@ -1,9 +1,10 @@
 from PySide2.QtWidgets import *
 from tela_login.ui_tela_login import CriarTelaLogin
-from tela_criar_conta.ui_tela_criar_conta import CriarTelaCriarConta
+from tela_cadastrar_usuario.ui_tela_cadastrar_usuario import CriarTelaCadastrarUsuario
 from tela_alterar_dados.ui_tela_alterar_dados import CriarTelaAlterarDados
 from tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
 from tela_principal.ui_tela_principal import CriarPrincipal
+from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
 from Bibliotecas.Lib_BancoDeDados import *
 
 
@@ -11,20 +12,23 @@ class Eventos:
     def __init__(self):
         self.tela_login = CriarTelaLogin()
         self.tela_login.botao_login.clicked.connect(self.login)
-        self.tela_login.botao_criar_conta.clicked.connect(self.abrir_tela_criar_conta)
+        self.tela_login.botao_criar_conta.clicked.connect(self.abrir_tela_cadastrar_usuario)
 
-        self.tela_criar_conta = CriarTelaCriarConta()
-        self.tela_criar_conta.botao_criar_conta.clicked.connect(self.criar_conta)
+        self.tela_cadastrar_usuario = CriarTelaCadastrarUsuario()
+        self.tela_cadastrar_usuario.botao_cadastrar_usuario.clicked.connect(self.cadastrar_usuario)
 
         self.tela_alterar_dados = CriarTelaAlterarDados()
         self.tela_alterar_dados.botao_alterar_dados.clicked.connect(self.alterar_dados_usuario)
+
+        self.tela_excluir_usuario = CriarTelaExcluirUsuario()
 
         self.tela_cadastrar_produto = CriarTelaCadastrarProduto()
         self.tela_cadastrar_produto.botao_cadastrar_produto.clicked.connect(self.cadastrar_produto)
 
         self.tela_principal = CriarPrincipal()
-        self.tela_principal.action_cadastrar.triggered.connect(self.tela_criar_conta.mostrar_tela)
-        self.tela_principal.action_alterar.triggered.connect(self.tela_alterar_dados.mostrar_tela)
+        self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
+        self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_dados.mostrar_tela)
+        self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
     # __init__
 
     def iniciar(self) -> None:
@@ -62,50 +66,50 @@ class Eventos:
             QMessageBox.critical(self.tela_login, 'Erro', "<font face='MS Shell Dlg 2' size=4>Usuário ou senha inválidos</font>")
     # login
 
-    def abrir_tela_criar_conta(self) -> None:
+    def abrir_tela_cadastrar_usuario(self) -> None:
         """
         Função que abre a tela de cadastro de usuário
         :return: None
         """
-        self.tela_criar_conta.mostrar_tela()
+        self.tela_cadastrar_usuario.mostrar_tela()
         self.tela_login.hide()
-    # abrir_tela_criar_conta
+    # abrir_tela_cadastrar_usuario
 
-    def criar_conta(self) -> None:
+    def cadastrar_usuario(self) -> None:
         """
         Função responsável por criar um novo usuário no banco de dados
         :return: None
         """
-        if len(self.tela_criar_conta.texto_usuario.text()) < 2:
-            QMessageBox.critical(self.tela_criar_conta, 'Erro', "<font face='MS Shell Dlg 2' size=4>Usuário inválido: O nome do usuário é muito pequeno</font>")
-        elif len(self.tela_criar_conta.texto_email.text()) < 5 or '@' not in self.tela_criar_conta.texto_email.text():
-            QMessageBox.critical(self.tela_criar_conta, 'Erro', "<font face='MS Shell Dlg 2' size=4>Email inválido</font>")
-        elif len(self.tela_criar_conta.texto_senha_1.text()) < 4:
-            QMessageBox.critical(self.tela_criar_conta, 'Erro', "<font face='MS Shell Dlg 2' size=4>Senha inválida: A senha deve ter pelo menos 4 caracteres</font>")
-        elif self.tela_criar_conta.texto_senha_1.text() != self.tela_criar_conta.texto_senha_2.text():
-            QMessageBox.critical(self.tela_criar_conta, 'Erro', "<font face='MS Shell Dlg 2' size=4>Senha inválida: As senhas digitadas são diferentes</font>")
-        elif not (self.tela_criar_conta.radio_button_gerente.isChecked() or
-                  self.tela_criar_conta.radio_button_vendedor.isChecked() or
-                  self.tela_criar_conta.radio_button_entregador.isChecked()):
-            QMessageBox.critical(self.tela_criar_conta, 'Erro', "<font face='MS Shell Dlg 2' size=4>Cargo inválido: Selecione o cargo deste usuário</font>")
+        if len(self.tela_cadastrar_usuario.texto_usuario.text()) < 2:
+            QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Usuário inválido: O nome do usuário é muito pequeno</font>")
+        elif len(self.tela_cadastrar_usuario.texto_email.text()) < 5 or '@' not in self.tela_cadastrar_usuario.texto_email.text():
+            QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Email inválido</font>")
+        elif len(self.tela_cadastrar_usuario.texto_senha_1.text()) < 4:
+            QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Senha inválida: A senha deve ter pelo menos 4 caracteres</font>")
+        elif self.tela_cadastrar_usuario.texto_senha_1.text() != self.tela_cadastrar_usuario.texto_senha_2.text():
+            QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Senha inválida: As senhas digitadas são diferentes</font>")
+        elif not (self.tela_cadastrar_usuario.radio_button_gerente.isChecked() or
+                  self.tela_cadastrar_usuario.radio_button_vendedor.isChecked() or
+                  self.tela_cadastrar_usuario.radio_button_entregador.isChecked()):
+            QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Cargo inválido: Selecione o cargo deste usuário</font>")
         else:
-            nome = self.tela_criar_conta.texto_usuario.text()
-            email = self.tela_criar_conta.texto_email.text()
-            senha = self.tela_criar_conta.texto_senha_1.text()
-            if self.tela_criar_conta.radio_button_entregador.isChecked():
+            nome = self.tela_cadastrar_usuario.texto_usuario.text()
+            email = self.tela_cadastrar_usuario.texto_email.text()
+            senha = self.tela_cadastrar_usuario.texto_senha_1.text()
+            if self.tela_cadastrar_usuario.radio_button_entregador.isChecked():
                 cargo = 1
-            elif self.tela_criar_conta.radio_button_vendedor.isChecked():
+            elif self.tela_cadastrar_usuario.radio_button_vendedor.isChecked():
                 cargo = 2
             else:
                 cargo = 3
             ret = inserir_usuario(nome, email, senha, cargo)
             mensagem = ret[1]
             if not ret[0]:
-                QMessageBox.critical(self.tela_criar_conta, 'Erro', mensagem)
+                QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro', mensagem)
             else:
-                opcao = QMessageBox.information(self.tela_criar_conta, 'Sucesso', mensagem)
+                opcao = QMessageBox.information(self.tela_cadastrar_usuario, 'Sucesso', mensagem)
                 if opcao == QMessageBox.StandardButton.Ok:
-                    self.tela_criar_conta.close()
+                    self.tela_cadastrar_usuario.close()
                     if not self.tela_principal.isVisible():
                         self.iniciar()
     # criar_conta

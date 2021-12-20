@@ -6,8 +6,9 @@ import sys
 
 class Ui_tela_principal(object):
     def __init__(self):
-        self.action_cadastrar = QAction()
-        self.action_alterar = QAction()
+        self.action_cadastrar_usuario = QAction()
+        self.action_alterar_usuario = QAction()
+        self.action_excluir_usuario = QAction()
         self.action_relatorio_total = QAction()
         self.action_relatorio_dia = QAction()
         self.action_relatorio_completo = QAction()
@@ -54,27 +55,37 @@ class Ui_tela_principal(object):
         tela_principal.setWindowTitle(u"Gerenciador de Estoque")
         tela_principal.setWindowIcon(icon)
 
-        self.action_cadastrar = QAction(tela_principal)
-        self.action_cadastrar.setText("Cadastrar")
-        self.action_cadastrar.setShortcut("F1")
-        self.action_alterar = QAction(tela_principal)
-        self.action_alterar.setText("Alterar")
-        self.action_alterar.setShortcut("F2")
+        self.action_cadastrar_usuario = QAction(tela_principal)
+        self.action_cadastrar_usuario.setText("Cadastrar")
+        self.action_cadastrar_usuario.setShortcut("F1")
+
+        self.action_alterar_usuario = QAction(tela_principal)
+        self.action_alterar_usuario.setText("Alterar")
+        self.action_alterar_usuario.setShortcut("F2")
+
+        self.action_excluir_usuario = QAction(tela_principal)
+        self.action_excluir_usuario.setText("Excluir")
+        self.action_excluir_usuario.setShortcut("F3")
+
         self.action_relatorio_total = QAction(tela_principal)
         self.action_relatorio_total.setText("Relatório Total")
-        self.action_relatorio_total.setShortcut("F3")
+        self.action_relatorio_total.setShortcut("F4")
+
         self.action_relatorio_dia = QAction(tela_principal)
         self.action_relatorio_dia.setText("Relatório Dia")
-        self.action_relatorio_dia.setShortcut("F4")
+        self.action_relatorio_dia.setShortcut("F5")
+
         self.action_relatorio_completo = QAction(tela_principal)
         self.action_relatorio_completo.setText("Relatório Completo")
-        self.action_relatorio_completo.setShortcut("F5")
+        self.action_relatorio_completo.setShortcut("F6")
+
         self.action_relatorio_customizado = QAction(tela_principal)
         self.action_relatorio_customizado.setText("Relatório por Produto")
-        self.action_relatorio_customizado.setShortcut("F6")
+        self.action_relatorio_customizado.setShortcut("F7")
+
         self.action_relatorio_quantidade = QAction(tela_principal)
         self.action_relatorio_quantidade.setText("Relatório por Quantidade")
-        self.action_relatorio_quantidade.setShortcut("F7")
+        self.action_relatorio_quantidade.setShortcut("F8")
 
         self.centralwidget = QWidget(tela_principal)
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -238,8 +249,11 @@ class Ui_tela_principal(object):
         self.menubar.addAction(self.menu_usuarios.menuAction())
         self.menubar.addAction(self.menu_relatorios_vendas.menuAction())
         self.menubar.addAction(self.menu_relatorio_estoque.menuAction())
-        self.menu_usuarios.addAction(self.action_cadastrar)
-        self.menu_usuarios.addAction(self.action_alterar)
+
+        self.menu_usuarios.addAction(self.action_cadastrar_usuario)
+        self.menu_usuarios.addAction(self.action_alterar_usuario)
+        self.menu_usuarios.addAction(self.action_excluir_usuario)
+
         self.menu_relatorios_vendas.addAction(self.action_relatorio_total)
         self.menu_relatorios_vendas.addAction(self.action_relatorio_dia)
         self.menu_relatorio_estoque.addAction(self.action_relatorio_completo)

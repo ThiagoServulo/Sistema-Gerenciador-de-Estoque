@@ -17,7 +17,7 @@ class Ui_tela_alterar_dados(object):
 
     def setupUi(self, tela_alterar_dados):
         icon = QIcon()
-        icon.addFile(u"icones/icone_login.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u"icones/icone_editar_usuario.png", QSize(), QIcon.Normal, QIcon.Off)
 
         font = QFont()
         font.setFamily(u"MS Shell Dlg 2")
