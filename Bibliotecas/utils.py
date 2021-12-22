@@ -21,6 +21,24 @@ def converter_matricula_para_id(matricula: int) -> int:
 # converter_matricula_para_id
 
 
+def valida_matricula(matricula_str: str) -> int:
+    """
+    Função que valida o número de matrícula
+    :param matricula_str: número da matrícula no formato string
+    :return: número da matrícula no formato inteiro. Se o número de matrícula for inválido será retornado -1
+    """
+    if len(matricula_str) < 1:
+        return -1
+    else:
+        try:
+            matricula_int = int(matricula_str)
+        except ValueError:
+            return -1
+        else:
+            return matricula_int
+# valida_matricula
+
+
 def criptografar_senha(senha: str) -> str:
     """
     Função que criptografa a senha
@@ -61,3 +79,20 @@ def converte_codigo_cargo_para_nome(codigo_cargo: int) -> str:
     elif codigo_cargo == 3:
         return 'Gerente'
 # converte_codigo_cargo_para_nome
+
+
+def retorna_numero_cargo_selecionado(self) -> int:
+    """
+    Função que retorna o código do cargo a partir do radio button selecionado
+    :param self: tela onde se localiza o radio button
+    :return: 1 - se o cargo selecionado for 'Entregador'
+             2 - se o cargo selecionado for 'Vendedor'
+             3 - se o cargo selecionado for 'Gerente'
+    """
+    if self.radio_button_entregador.isChecked():
+        return 1
+    elif self.radio_button_vendedor.isChecked():
+        return 2
+    elif self.radio_button_gerente.isChecked():
+        return 3
+# retorna_numero_cargo_selecionado

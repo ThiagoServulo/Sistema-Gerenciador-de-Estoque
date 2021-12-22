@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import *
 from tela_login.ui_tela_login import CriarTelaLogin
 from tela_cadastrar_usuario.ui_tela_cadastrar_usuario import CriarTelaCadastrarUsuario
-from tela_alterar_dados.ui_tela_alterar_dados import CriarTelaAlterarDados
+from tela_alterar_usuario.ui_tela_alterar_usuario import CriarTelaAlterarUsuario
 from tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
 from tela_principal.ui_tela_principal import CriarPrincipal
 from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
@@ -17,8 +17,8 @@ class Eventos:
         self.tela_cadastrar_usuario = CriarTelaCadastrarUsuario()
         self.tela_cadastrar_usuario.botao_cadastrar_usuario.clicked.connect(self.cadastrar_usuario)
 
-        self.tela_alterar_dados = CriarTelaAlterarDados()
-        self.tela_alterar_dados.botao_alterar_dados.clicked.connect(self.alterar_dados_usuario)
+        self.tela_alterar_usuario = CriarTelaAlterarUsuario()
+        self.tela_alterar_usuario.botao_alterar_usuario.clicked.connect(self.alterar_usuario)
 
         self.tela_excluir_usuario = CriarTelaExcluirUsuario()
 
@@ -27,7 +27,7 @@ class Eventos:
 
         self.tela_principal = CriarPrincipal()
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
-        self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_dados.mostrar_tela)
+        self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
     # __init__
 
@@ -44,12 +44,12 @@ class Eventos:
         Função responsável por checar se os dados do usuário são válidos para este acessar o sistema
         :return: None
         """
-        if len(self.tela_login.texto_matricula.text()) > 0 and len(self.tela_login.texto_senha.text()) > 0:
-            try:
-                matricula = int(self.tela_login.texto_matricula.text())
-            except ValueError:
-                QMessageBox.critical(self.tela_login, 'Erro', "<font face='MS Shell Dlg 2' size=4>Matrícula inválida</font>")
-                return
+        matricula = valida_matricula(self.tela_login.texto_matricula.text())
+        if matricula == -1:
+            QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Matrícula inválida</font>")
+        elif len(self.tela_login.texto_senha.text()) <= 0:
+            QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Senha inválida</font>")
+        else:
             ret = verificar_dados_usuario(matricula, self.tela_login.texto_senha.text())
             if ret == -1:
                 QMessageBox.critical(self.tela_login, 'Erro', "<font face='MS Shell Dlg 2' size=4>Matrícula não encontrada</font>")
@@ -62,8 +62,7 @@ class Eventos:
                 self.tela_principal.texto_cargo.setText(converte_codigo_cargo_para_nome(cargo))
                 self.tela_login.hide()
                 self.tela_principal.mostrar_tela(cargo)
-        else:
-            QMessageBox.critical(self.tela_login, 'Erro', "<font face='MS Shell Dlg 2' size=4>Usuário ou senha inválidos</font>")
+
     # login
 
     def abrir_tela_cadastrar_usuario(self) -> None:
@@ -96,12 +95,7 @@ class Eventos:
             nome = self.tela_cadastrar_usuario.texto_usuario.text()
             email = self.tela_cadastrar_usuario.texto_email.text()
             senha = self.tela_cadastrar_usuario.texto_senha_1.text()
-            if self.tela_cadastrar_usuario.radio_button_entregador.isChecked():
-                cargo = 1
-            elif self.tela_cadastrar_usuario.radio_button_vendedor.isChecked():
-                cargo = 2
-            else:
-                cargo = 3
+            cargo = retorna_numero_cargo_selecionado(self.tela_cadastrar_usuario)
             ret = inserir_usuario(nome, email, senha, cargo)
             mensagem = ret[1]
             if not ret[0]:
@@ -137,47 +131,38 @@ class Eventos:
             print('Sucesso')
     # cadastrar_produto
 
-    def alterar_dados_usuario(self) -> None:
+    def alterar_usuario(self) -> None:
         """
         Função que permite fazer alterações nos dados do usuário
         :return: None
         """
-        if len(self.tela_alterar_dados.texto_matricula.text()) < 1:
-            QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Insira a matrícula do funcionário</font>")
-        elif not (self.tela_alterar_dados.radio_button_gerente.isChecked() or
-                  self.tela_alterar_dados.radio_button_vendedor.isChecked() or
-                  self.tela_alterar_dados.radio_button_entregador.isChecked()):
-            QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Cargo inválido: Selecione o novo cargo deste usuário</font>")
+        matricula = valida_matricula(self.tela_alterar_usuario.texto_matricula.text())
+        if matricula == -1:
+            QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Matrícula inválida</font>")
+        elif not (self.tela_alterar_usuario.radio_button_gerente.isChecked() or
+                  self.tela_alterar_usuario.radio_button_vendedor.isChecked() or
+                  self.tela_alterar_usuario.radio_button_entregador.isChecked()):
+            QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size = 4>Cargo inválido: Selecione o novo cargo deste usuário</font>")
         else:
-            try:
-                matricula = int(self.tela_alterar_dados.texto_matricula.text())
-            except ValueError:
-                QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size=4>Matrícula inválida</font>")
-                return
             nome = nome_usuario(matricula)
             (status, mensagem) = verificar_usuario_existe(nome)
             if status:
-                QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size=4>Este usuário não existe</font>")
+                QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Este usuário não existe</font>")
                 return
             if matricula == int(self.tela_principal.texto_matricula.text()):
-                QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size=4>Você não pode alterar seu própio cargo</font>")
+                QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Você não pode alterar seu própio cargo</font>")
                 return
             cargo_atual = cargo_usuario(matricula)
-            if self.tela_alterar_dados.radio_button_entregador.isChecked():
-                novo_cargo = 1
-            elif self.tela_alterar_dados.radio_button_vendedor.isChecked():
-                novo_cargo = 2
-            else:
-                novo_cargo = 3
+            novo_cargo = retorna_numero_cargo_selecionado(self.tela_alterar_usuario)
             if novo_cargo == cargo_atual:
-                QMessageBox.critical(self.tela_alterar_dados, 'Erro', "<font face='MS Shell Dlg 2' size=4>Este já é o cargo atual deste funcionário</font>")
+                QMessageBox.critical(self.tela_alterar_usuario, 'Erro', "<font face='MS Shell Dlg 2' size=4>Este já é o cargo atual deste funcionário</font>")
                 return
             nome_cargo = converte_codigo_cargo_para_nome(novo_cargo)
-            opcao = QMessageBox.question(self.tela_alterar_dados, 'Confirmar', f"<font face='MS Shell Dlg 2' size=4>Deseja alterar o cargo de {nome} para {nome_cargo.lower()}?</font>", QMessageBox.Yes | QMessageBox.No)
+            opcao = QMessageBox.question(self.tela_alterar_usuario, 'Confirmar', f"<font face='MS Shell Dlg 2' size=4>Deseja alterar o cargo de {nome} para {nome_cargo.lower()}?</font>", QMessageBox.Yes | QMessageBox.No)
             if opcao == QMessageBox.Yes:
                 if alterar_cargo(matricula, novo_cargo):
-                    QMessageBox.information(self.tela_alterar_dados, 'Sucesso', f"<font face='MS Shell Dlg 2' size=4>O cargo de {nome} foi alterado com sucesso</font>")
+                    QMessageBox.information(self.tela_alterar_usuario, 'Sucesso', f"<font face='MS Shell Dlg 2' size=4>O cargo de {nome} foi alterado com sucesso</font>")
                 else:
-                    QMessageBox.critical(self.tela_alterar_dados, 'Erro', f"<font face='MS Shell Dlg 2' size=4>Não foi possível alterar o cargo de {nome}</font>")
-            self.tela_alterar_dados.hide()
+                    QMessageBox.critical(self.tela_alterar_usuario, 'Erro', f"<font face='MS Shell Dlg 2' size=4>Não foi possível alterar o cargo de {nome}</font>")
+            self.tela_alterar_usuario.hide()
     # alterar_dados_usuario
