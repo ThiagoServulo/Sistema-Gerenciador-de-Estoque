@@ -77,31 +77,43 @@ def executa_comando(comando: str) -> int:
 # executa_comando
 
 
-def inserir_usuario(nome: str, email: str, senha: str, cargo: int) -> tuple[bool, str]:
+def inserir_usuario_banco(nome: str, email: str, senha: str, cargo: int) -> int:
     """
     Função para cadastrar um novo usuário no banco de dados
     :param nome: nome informado pelo usuário para cadastro
     :param email: email informado pelo usuário para cadastro
     :param senha: senha informada pelo usuário para cadastro
     :param cargo: cargo informado pelo usuário para cadastro
-    :return: tuple(status, mensagem)
-                status: True - se o usuário for cadastrado com sucesso
-                        False - se ocorrer algum problema no cadastro
-                mensagem: mensagem de texto para ser apresentada ao usuário indicando sucesso ou falha no cadastro
+    :return: Número de matrícula - se o usuário for cadastrado com sucesso
+             0 - se ocorrer algum problema no cadastro
     """
-    ret = verificar_usuario_existe(nome)
-    if not ret[0]:
-        return ret
+    if not verificar_usuario_existe(nome):
+        return 0
 
     senha_criptografada = criptografar_senha(senha)
 
-    if executa_comando(f"""INSERT INTO usuarios (nome, email, senha, cargo) VALUES ('{nome}', '{email}', '{senha_criptografada}', {cargo})""") == 1:
+    if executa_comando(f"""INSERT INTO usuarios (nome, email, senha, cargo) 
+                           VALUES ('{nome}', '{email}', '{senha_criptografada}', {cargo})""") == 1:
         matricula = num_matricula_usuario(nome)
-        ret = (True, f"<font face='MS Shell Dlg 2' size=4>O usuário {nome} foi adicionado com sucesso.\nNúmero de matrícula: {matricula}</font>")
+        return matricula
     else:
-        ret = (False, f"<font face='MS Shell Dlg 2'size=4>Erro ao adicionar o usuário: {nome}</font>")
-    return ret
+        return 0
 # inserir_usuario
+
+
+def excluir_usuario_banco(matricula: int) -> bool:
+    """
+    Função que exclui um usuário do banco a partir da sua matrícula
+    :param matricula: matrícula do usuário que será excluído
+    :return: True - se o usuário for excluído com sucesso
+             False - se ocorrer algum erro durante a exclusão
+    """
+    id_usuario = converter_matricula_para_id(matricula)
+    if executa_comando(f"""DELETE FROM usuarios WHERE id = {id_usuario}""") == 1:
+        return True
+    else:
+        return False
+# excluir_usuario
 
 
 def desconectar_servidor(conn: sqlite3.Connection) -> None:
@@ -114,23 +126,19 @@ def desconectar_servidor(conn: sqlite3.Connection) -> None:
 # desconectar_servidor
 
 
-def verificar_usuario_existe(nome: str) -> tuple[bool, str]:
+def verificar_usuario_existe(nome: str) -> bool:
     """
     Função para verificar se o usuário já está cadastrado no banco
     :param nome: nome do usuário a ser verificado
-    :return: tuple(status, mensagem)
-                status: True - se o usuário não estiver cadastrado
-                        False - se o usuário já estiver cadastrado
-                mensagem: mensagem de texto para ser apresentada ao usuário indicando o status do usuário
+    :return: True - se o usuário não estiver cadastrado
+             False - se o usuário já estiver cadastrado
     """
     dados = executa_query(f"SELECT id FROM usuarios WHERE nome='{nome}'")
     if len(dados) > 0:
         matricula = converter_id_para_matricula(dados[0][0])
-        ret = (False, f"<font face='MS Shell Dlg 2' size=4>O usuário {nome} já está castrado.\nNúmero de matrícula: {matricula}</font>")
+        return False
     else:
-        ret = (True, '')
-
-    return ret
+        return True
 # verificar_usuario_existe
 
 
@@ -221,7 +229,7 @@ def data_atual_banco() -> str:
 # data_atual_banco
 
 
-def alterar_cargo(matricula: int, cargo: int) -> bool:
+def alterar_cargo_banco(matricula: int, cargo: int) -> bool:
     """
     Função que altera o cargo de um usuário
     :param matricula: matrícula do usuário que terá o cargo alterado

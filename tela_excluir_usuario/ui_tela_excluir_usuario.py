@@ -8,7 +8,7 @@ class Ui_tela_excluir_usuario(object):
     def __init__(self):
         self.centralwidget = QWidget()
         self.texto_matricula = QLineEdit()
-        self.botao_login = QPushButton()
+        self.botao_excluir_usuario = QPushButton()
         self.label_matricula = QLabel()
     # __init__
 
@@ -32,10 +32,10 @@ class Ui_tela_excluir_usuario(object):
         self.texto_matricula.setText(u"")
         self.texto_matricula.setMaxLength(20)
 
-        self.botao_login = QPushButton(tela_excluir_usuario)
-        self.botao_login.setGeometry(QRect(80, 50, 141, 41))
-        self.botao_login.setFont(font)
-        self.botao_login.setText(u"Excluir Usuário")
+        self.botao_excluir_usuario = QPushButton(tela_excluir_usuario)
+        self.botao_excluir_usuario.setGeometry(QRect(80, 50, 141, 41))
+        self.botao_excluir_usuario.setFont(font)
+        self.botao_excluir_usuario.setText(u"Excluir Usuário")
 
         self.label_matricula = QLabel(tela_excluir_usuario)
         self.label_matricula.setGeometry(QRect(30, 10, 71, 16))

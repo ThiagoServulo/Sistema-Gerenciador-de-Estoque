@@ -1,4 +1,5 @@
 from passlib.hash import pbkdf2_sha256 as cryp
+from PySide2.QtWidgets import *
 
 
 def converter_id_para_matricula(id_usuario: int) -> int:
