@@ -33,6 +33,7 @@ class Eventos:
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
         self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
+        self.tela_principal.action_cadastrar_produto.triggered.connect(self.tela_cadastrar_produto.mostrar_tela)
     # __init__
 
     def iniciar(self) -> None:
@@ -118,8 +119,13 @@ class Eventos:
             email = self.tela_cadastrar_usuario.texto_email.text()
             senha = self.tela_cadastrar_usuario.texto_senha_1.text()
             cargo = retorna_numero_cargo_selecionado(self.tela_cadastrar_usuario)
-            matricula = inserir_usuario_banco(nome, email, senha, cargo)
-            if matricula == 0:
+            status = inserir_usuario_banco(nome, email, senha, cargo)
+            if status == -1:
+                QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro',
+                                     f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
+                                     f"Este usuário já está cadastrado"
+                                     f"\nNúmero de matrícula: {num_matricula_usuario(nome)}</font>")
+            elif status == 0:
                 QMessageBox.critical(self.tela_cadastrar_usuario, 'Erro',
                                      f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
                                      f"Erro ao adicionar o usuário: {nome}</font>")
@@ -127,7 +133,7 @@ class Eventos:
                 opcao = QMessageBox.information(self.tela_cadastrar_usuario, 'Sucesso',
                                                 f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
                                                 f"O usuário {nome} foi adicionado com sucesso."
-                                                f"\nNúmero de matrícula: {matricula}</font>")
+                                                f"\nNúmero de matrícula: {num_matricula_usuario(nome)}</font>")
                 if opcao == QMessageBox.StandardButton.Ok:
                     self.tela_cadastrar_usuario.close()
                     if not self.tela_principal.isVisible():
@@ -136,7 +142,7 @@ class Eventos:
 
     def cadastrar_produto(self) -> None:
         """
-        Função responsável por acrescentar os produtos no banco de dados
+        Função responsável por validar os dados da tela de cadastro de produtos
         :return: None
         """
         if len(self.tela_cadastrar_produto.texto_descricao.text()) < 1:
@@ -147,10 +153,10 @@ class Eventos:
             QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
                                  f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
                                  f"Insira a marca do produto</font>")
-        elif len(self.tela_cadastrar_produto.texto_tamanho.text()) < 1:
+        elif len(self.tela_cadastrar_produto.texto_fabricante.text()) < 1:
             QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
                                  f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
-                                 f"Insira o tamanho do produto</font>")
+                                 f"Insira o fabricante do produto</font>")
         elif self.tela_cadastrar_produto.spin_box_quantidade.value() <= 0:
             QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
                                  f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
@@ -159,17 +165,21 @@ class Eventos:
             QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
                                  f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
                                  f"Insira o preço de compra</font>")
-        elif self.tela_cadastrar_produto.double_spin_box_preco_venda.value() <= 0:
-            QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
-                                 f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
-                                 f"Insira o preço de venda</font>")
-        elif self.tela_cadastrar_produto.double_spin_box_preco_venda.value() < \
-                self.tela_cadastrar_produto.double_spin_box_preco_compra.value():
-            QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
-                                 f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
-                                 f"O preço de venda deve ser menor que o de compra</font>")
         else:
-            print('Sucesso')
+            descricao = self.tela_cadastrar_produto.texto_descricao.text()
+            marca = self.tela_cadastrar_produto.texto_marca.text()
+            fabricante = self.tela_cadastrar_produto.texto_fabricante.text()
+            quantidade = self.tela_cadastrar_produto.spin_box_quantidade.value()
+            preco_compra = self.tela_cadastrar_produto.double_spin_box_preco_compra.value()
+            status = inserir_produto_banco(descricao, marca, fabricante, quantidade, preco_compra)
+            if status == -1:
+                print('Já ta cadastrado')
+            elif status == 0:
+                QMessageBox.critical(self.tela_cadastrar_produto, 'Erro',
+                                     f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
+                                     f"Erro ao cadastrar produto</font>")
+            else:
+                print('Cadastrado com sucesso')
     # cadastrar_produto
 
     def alterar_usuario(self) -> None:
@@ -256,4 +266,4 @@ class Eventos:
                                          f"<font face={Eventos.fonte} size={Eventos.tamanho}>"
                                          f"Erro ao excluir usuário {nome}</font>")
             self.tela_excluir_usuario.hide()
-        # excluir_usuario
+    # excluir_usuario

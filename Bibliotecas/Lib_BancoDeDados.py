@@ -8,9 +8,6 @@ def conectar_servidor() -> sqlite3.Connection:
     Função para conectar ao servidor de banco de dados
     :return: retorna a conexão ao banco de dados
     """
-    if not os.path.exists('gerenciador_estoque.bd'):
-        cria_tabela_tipos_cargos()
-
     conn = sqlite3.connect('gerenciador_estoque.bd')
 
     conn.execute("""CREATE TABLE IF NOT EXISTS usuarios(
@@ -21,30 +18,18 @@ def conectar_servidor() -> sqlite3.Connection:
         cargo INTEGER NOT NULL);"""
                  )
 
-    return conn
-# conectar_servidor
-
-
-def cria_tabela_tipos_cargos() -> None:
-    """
-    Função para criar e inicializar valores da tabela tipos_cargos
-    :return: None
-    """
-    conn = sqlite3.connect('gerenciador_estoque.bd')
-
-    conn.execute("""CREATE TABLE IF NOT EXISTS tipos_cargos(
+    conn.execute("""CREATE TABLE IF NOT EXISTS produtos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cargo TEXT NOT NULL);"""
+        descricao TEXT NOT NULL,
+        marca TEXT NOT NULL,
+        fabricante TEXT NOT NULL,
+        quantidade INTEGER NOT NULL,
+        preco_compra REAL NOT NULL,
+        data_atualizacao TEXT NOT NULL);"""
                  )
 
-    cursor = conn.cursor()
-    cursor.execute(f"INSERT INTO tipos_cargos (cargo) VALUES ('Entregador')")
-    cursor.execute(f"INSERT INTO tipos_cargos (cargo) VALUES ('Vendedor')")
-    cursor.execute(f"INSERT INTO tipos_cargos (cargo) VALUES ('Gerente')")
-    conn.commit()
-
-    desconectar_servidor(conn)
-# cria_tabela_tipos_cargos
+    return conn
+# conectar_servidor
 
 
 def executa_query(query: str) -> list:
@@ -84,21 +69,45 @@ def inserir_usuario_banco(nome: str, email: str, senha: str, cargo: int) -> int:
     :param email: email informado pelo usuário para cadastro
     :param senha: senha informada pelo usuário para cadastro
     :param cargo: cargo informado pelo usuário para cadastro
-    :return: Número de matrícula - se o usuário for cadastrado com sucesso
-             0 - se ocorrer algum problema no cadastro
+    :return: 1  - se o usuário for cadastrado com sucesso
+             0  - se ocorrer algum problema no cadastro
+             -1 - se o usuário já estiver cadastrado
     """
     if not verificar_usuario_existe(nome):
-        return 0
+        return -1
 
     senha_criptografada = criptografar_senha(senha)
 
     if executa_comando(f"""INSERT INTO usuarios (nome, email, senha, cargo) 
                            VALUES ('{nome}', '{email}', '{senha_criptografada}', {cargo})""") == 1:
-        matricula = num_matricula_usuario(nome)
-        return matricula
+        return 1
     else:
         return 0
 # inserir_usuario
+
+
+def inserir_produto_banco(descricao: str, marca: str, fabricante: str, quantidade: int, preco_compra: float) -> int:
+    """
+    Função que insere um produto no banco de dados
+    :param descricao: descrição do produto
+    :param marca: marca do produto
+    :param fabricante: fabricante do produto
+    :param quantidade: quantidade comprada do produto
+    :param preco_compra: preço de compra do do produto
+    :return: 1  - se o produto for cadastrado com sucesso
+             0  - se ocorrer algum problema no cadastro
+             -1 - se o produto já estiver cadastrado
+    """
+    if not verificar_produto_existe(descricao):
+        return -1
+
+    if executa_comando(f"""INSERT INTO produtos (descricao, marca, fabricante, quantidade, preco_compra, 
+                            data_atualizacao) VALUES ('{descricao}', '{marca}', '{fabricante}', {quantidade}, 
+                            {preco_compra}, '{data_atual_banco()}')""") == 1:
+        return 1
+    else:
+        return 0
+# inserir_produto_banco
 
 
 def excluir_usuario_banco(matricula: int) -> bool:
@@ -135,11 +144,25 @@ def verificar_usuario_existe(nome: str) -> bool:
     """
     dados = executa_query(f"SELECT id FROM usuarios WHERE nome='{nome}'")
     if len(dados) > 0:
-        matricula = converter_id_para_matricula(dados[0][0])
         return False
     else:
         return True
 # verificar_usuario_existe
+
+
+def verificar_produto_existe(descricao: str) -> bool:
+    """
+    Função para verificar se o produto já está cadastrado no banco
+    :param descricao: descricao do produto a ser verificado
+    :return: True - se o produto não estiver cadastrado
+             False - se o produto já estiver cadastrado
+    """
+    dados = executa_query(f"SELECT id FROM produtos WHERE descricao='{descricao}'")
+    if len(dados) > 0:
+        return False
+    else:
+        return True
+# verificar_produto_existe
 
 
 def nome_usuario(matricula: int) -> str:
