@@ -200,6 +200,19 @@
       </layout>
      </widget>
     </item>
+    <item row="0" column="2">
+     <spacer name="horizontal_spacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
     <item row="0" column="1">
      <widget class="QGroupBox" name="group_box_dados">
       <property name="sizePolicy">
@@ -358,21 +371,44 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="2">
-     <spacer name="horizontal_spacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="1" column="0" colspan="3">
-     <widget class="QTableView" name="tabela"/>
+     <widget class="QTableWidget" name="tableWidget">
+      <column>
+       <property name="text">
+        <string>Código</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Descrição</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Marca</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Fabricante</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Quantidade</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Preço de Compra</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Data Última Atualização</string>
+       </property>
+      </column>
+     </widget>
     </item>
    </layout>
   </widget>

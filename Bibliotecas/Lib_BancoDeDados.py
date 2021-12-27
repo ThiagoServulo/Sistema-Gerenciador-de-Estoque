@@ -1,6 +1,10 @@
 import sqlite3
-import os
 from Bibliotecas.utils import *
+
+
+# --------------------------------------------------------------------------------------------------
+# ----------------------------------------- Funções Gerais -----------------------------------------
+# --------------------------------------------------------------------------------------------------
 
 
 def conectar_servidor() -> sqlite3.Connection:
@@ -62,6 +66,36 @@ def executa_comando(comando: str) -> int:
 # executa_comando
 
 
+def desconectar_servidor(conn: sqlite3.Connection) -> None:
+    """
+    Função para desconectar do servidor de banco de dados
+    :param conn: conexão ao servidor de banco de dados
+    :return: None
+    """
+    conn.close()
+# desconectar_servidor
+
+
+def data_atual_banco() -> str:
+    """
+    Função que retorna a data atual do servidor de banco de dados
+    :return: string contendo a data atual no formato: 'dd/mm/aaaa'
+             se ocorrer algum erro ao buscar a data será retornado uma string vazia: ''
+    """
+    dados = executa_query(f"SELECT strftime('%d/%m/%Y','now')")
+
+    if len(dados) <= 0:
+        return ''
+
+    return dados[0][0]
+# data_atual_banco
+
+
+# --------------------------------------------------------------------------------------------------
+# --------------------------------------- Funções de Usuário ---------------------------------------
+# --------------------------------------------------------------------------------------------------
+
+
 def inserir_usuario_banco(nome: str, email: str, senha: str, cargo: int) -> int:
     """
     Função para cadastrar um novo usuário no banco de dados
@@ -86,30 +120,6 @@ def inserir_usuario_banco(nome: str, email: str, senha: str, cargo: int) -> int:
 # inserir_usuario
 
 
-def inserir_produto_banco(descricao: str, marca: str, fabricante: str, quantidade: int, preco_compra: float) -> int:
-    """
-    Função que insere um produto no banco de dados
-    :param descricao: descrição do produto
-    :param marca: marca do produto
-    :param fabricante: fabricante do produto
-    :param quantidade: quantidade comprada do produto
-    :param preco_compra: preço de compra do do produto
-    :return: 1  - se o produto for cadastrado com sucesso
-             0  - se ocorrer algum problema no cadastro
-             -1 - se o produto já estiver cadastrado
-    """
-    if not verificar_produto_existe(descricao):
-        return -1
-
-    if executa_comando(f"""INSERT INTO produtos (descricao, marca, fabricante, quantidade, preco_compra, 
-                            data_atualizacao) VALUES ('{descricao}', '{marca}', '{fabricante}', {quantidade}, 
-                            {preco_compra}, '{data_atual_banco()}')""") == 1:
-        return 1
-    else:
-        return 0
-# inserir_produto_banco
-
-
 def excluir_usuario_banco(matricula: int) -> bool:
     """
     Função que exclui um usuário do banco a partir da sua matrícula
@@ -125,16 +135,6 @@ def excluir_usuario_banco(matricula: int) -> bool:
 # excluir_usuario
 
 
-def desconectar_servidor(conn: sqlite3.Connection) -> None:
-    """
-    Função para desconectar do servidor de banco de dados
-    :param conn: conexão ao servidor de banco de dados
-    :return: None
-    """
-    conn.close()
-# desconectar_servidor
-
-
 def verificar_usuario_existe(nome: str) -> bool:
     """
     Função para verificar se o usuário já está cadastrado no banco
@@ -143,26 +143,12 @@ def verificar_usuario_existe(nome: str) -> bool:
              False - se o usuário já estiver cadastrado
     """
     dados = executa_query(f"SELECT id FROM usuarios WHERE nome='{nome}'")
+
     if len(dados) > 0:
         return False
-    else:
-        return True
+
+    return True
 # verificar_usuario_existe
-
-
-def verificar_produto_existe(descricao: str) -> bool:
-    """
-    Função para verificar se o produto já está cadastrado no banco
-    :param descricao: descricao do produto a ser verificado
-    :return: True - se o produto não estiver cadastrado
-             False - se o produto já estiver cadastrado
-    """
-    dados = executa_query(f"SELECT id FROM produtos WHERE descricao='{descricao}'")
-    if len(dados) > 0:
-        return False
-    else:
-        return True
-# verificar_produto_existe
 
 
 def nome_usuario(matricula: int) -> str:
@@ -237,21 +223,6 @@ def cargo_usuario(matricula: int) -> int:
 # cargo_usuario
 
 
-def data_atual_banco() -> str:
-    """
-    Função que retorna a data atual do servidor de banco de dados
-    :return: string contendo a data atual no formato: 'dd/mm/aaaa'
-             se ocorrer algum erro ao buscar a data será retornado uma string vazia: ''
-    """
-    dados = executa_query(f"SELECT strftime('%d/%m/%Y','now')")
-
-    if len(dados) <= 0:
-        return ''
-
-    return dados[0][0]
-# data_atual_banco
-
-
 def alterar_cargo_banco(matricula: int, cargo: int) -> bool:
     """
     Função que altera o cargo de um usuário
@@ -267,3 +238,83 @@ def alterar_cargo_banco(matricula: int, cargo: int) -> bool:
     else:
         return False
 # alterar_cargo
+
+
+# --------------------------------------------------------------------------------------------------
+# --------------------------------------- Funções de Produtos --------------------------------------
+# --------------------------------------------------------------------------------------------------
+
+
+def inserir_produto_banco(descricao: str, marca: str, fabricante: str, quantidade: int, preco_compra: float) -> int:
+    """
+    Função que insere um produto no banco de dados
+    :param descricao: descrição do produto
+    :param marca: marca do produto
+    :param fabricante: fabricante do produto
+    :param quantidade: quantidade comprada do produto
+    :param preco_compra: preço de compra do do produto
+    :return: 1  - se o produto for cadastrado com sucesso
+             0  - se ocorrer algum problema no cadastro
+             -1 - se o produto já estiver cadastrado
+    """
+    if not verificar_produto_existe(descricao):
+        return -1
+
+    if executa_comando(f"""INSERT INTO produtos (descricao, marca, fabricante, quantidade, preco_compra, 
+                            data_atualizacao) VALUES ('{descricao}', '{marca}', '{fabricante}', {quantidade}, 
+                            {preco_compra}, '{data_atual_banco()}')""") == 1:
+        return 1
+    else:
+        return 0
+# inserir_produto_banco
+
+
+def verificar_produto_existe(descricao: str) -> bool:
+    """
+    Função para verificar se o produto já está cadastrado no banco
+    :param descricao: descricao do produto a ser verificado
+    :return: True - se o produto não estiver cadastrado
+             False - se o produto já estiver cadastrado
+    """
+    dados = executa_query(f"SELECT id FROM produtos WHERE descricao='{descricao}'")
+
+    if len(dados) > 0:
+        return False
+
+    return True
+# verificar_produto_existe
+
+
+def maior_id_produto() -> int:
+    """
+    Função que retorna o id do último produto cadastrado
+    :return: id do último produto cadastrado
+             -1 - se não houver nenhum produto cadastrado
+    """
+    dados = executa_query(f"SELECT MAX(id) FROM produtos")
+
+    if len(dados) <= 0:
+        return -1
+
+    return dados[0][0]
+# maior_id_produto
+
+
+def busca_produto_por_id(id_produto: int) -> tuple:
+    """
+    Função que busca os dados de um produto através do seu id
+    :param id_produto: id do produto a ser procurado
+    :return: tupla de valores contendo os dados do produto:
+             (id, descrição, marca, fabricante, quantidade, preço de compra, data da última atualização).
+             Se não houverem produtos cadastrados será retonado uma tupla vazia
+    """
+    dados = executa_query(f"SELECT * FROM produtos WHERE id={id_produto}")
+
+    if len(dados) <= 0:
+        return ()
+
+    return dados[0]
+# maior_id_produto
+
+# --------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
