@@ -2,7 +2,7 @@ from tela_login.ui_tela_login import CriarTelaLogin
 from tela_cadastrar_usuario.ui_tela_cadastrar_usuario import CriarTelaCadastrarUsuario
 from tela_alterar_usuario.ui_tela_alterar_usuario import CriarTelaAlterarUsuario
 from tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
-from tela_principal.ui_tela_principal import CriarPrincipal
+from tela_principal.ui_tela_principal import CriarTelaPrincipal
 from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
 from Bibliotecas.Lib_BancoDeDados import *
 from PySide2.QtWidgets import *
@@ -30,7 +30,7 @@ class Eventos:
         self.tela_cadastrar_produto = CriarTelaCadastrarProduto()
         self.tela_cadastrar_produto.botao_cadastrar_produto.clicked.connect(self.cadastrar_produto)
 
-        self.tela_principal = CriarPrincipal()
+        self.tela_principal = CriarTelaPrincipal()
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
         self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
@@ -75,7 +75,7 @@ class Eventos:
                 self.tela_principal.texto_data.setText(data_atual_banco())
                 self.tela_principal.texto_cargo.setText(converte_codigo_cargo_para_nome(cargo))
                 self.tela_login.hide()
-                self.inicializar_tabela()
+                self.atualizar_tabela_produtos()
                 self.tela_principal.mostrar_tela(cargo)
     # login
 
@@ -191,6 +191,7 @@ class Eventos:
                     QMessageBox.information(self.tela_cadastrar_produto, 'Sucesso',
                                             f"<font face={self.fonte} size={self.tamanho}>"
                                             f"O produto {descricao} foi cadastrado com sucesso</font>")
+                    self.atualizar_tabela_produtos()
                 self.tela_cadastrar_produto.close()
     # cadastrar_produto
 
@@ -280,14 +281,25 @@ class Eventos:
             self.tela_excluir_usuario.hide()
     # excluir_usuario
 
-    def inicializar_tabela(self):
-        quantidade_produtos = maior_id_produto()
+    def atualizar_tabela_produtos(self) -> None:
+        """
+        Função que atualiza a tabela de produtos
+        :return: Nenhum
+        """
+        quantidade_produtos = quantidade_produtos_cadastrados()
         if quantidade_produtos == -1:
             return
         self.tela_principal.tabela.setRowCount(quantidade_produtos)
-        for num_linha in range(quantidade_produtos):
-            tupla_produto = busca_produto_por_id(num_linha + 1)
+        produto_maior_id = maior_id_produto()
+        num_linha = 0
+        num_produto = 1
+        while num_produto <= produto_maior_id:
+            tupla_produto = busca_produto_por_id(num_produto)
+            num_produto += 1
+            if tupla_produto == ():
+                continue
             for num_coluna in range(7):
                 self.tela_principal.tabela.setItem(num_linha, num_coluna,
                                                    QTableWidgetItem(str(tupla_produto[num_coluna])))
-    # inicializar_tabela
+            num_linha += 1
+    # atualizar_tabela_produtos

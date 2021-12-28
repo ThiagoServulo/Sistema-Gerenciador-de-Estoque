@@ -310,9 +310,9 @@ class Ui_tela_principal(object):
     # setupUi
 
 
-class CriarPrincipal(QMainWindow, Ui_tela_principal):
+class CriarTelaPrincipal(QMainWindow, Ui_tela_principal):
     def __init__(self):
-        super(CriarPrincipal, self).__init__()
+        super(CriarTelaPrincipal, self).__init__()
         self.setupUi(self)
     # __init__
 
@@ -335,6 +335,6 @@ class CriarPrincipal(QMainWindow, Ui_tela_principal):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = CriarPrincipal()
+    window = CriarTelaPrincipal()
     window.mostrar_tela(3)
     sys.exit(app.exec_())

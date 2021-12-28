@@ -155,7 +155,8 @@ def nome_usuario(matricula: int) -> str:
     """
     Função que retorna o nome do usuário
     :param matricula: número de matrícula do usuário a ser consultado
-    :return: retorna o nome do usuário, se este for encontrado, ou uma string vazia caso o número de matrícula seja inválido
+    :return: string contendo o nome do usuário
+             se o número de matrícula for inválido será retornado uma string vazia
     """
     id_usuario = converter_matricula_para_id(matricula)
     dados = executa_query(f"SELECT nome FROM usuarios WHERE id='{id_usuario}'")
@@ -285,6 +286,22 @@ def verificar_produto_existe(descricao: str) -> bool:
 # verificar_produto_existe
 
 
+def descricao_produto(id_produto) -> str:
+    """
+    Função que busca a descrição de um produto através do seu id
+    :param id_produto: id do produto a ser buscado
+    :return: string contendo a descrição do produto
+             se o id não for encontrado será retonado uma string vazia
+    """
+    dados = executa_query(f"SELECT descricao FROM produtos WHERE id={id_produto}")
+
+    if len(dados) <= 0:
+        return ''
+
+    return dados[0][0]
+# descricao_produto
+
+
 def maior_id_produto() -> int:
     """
     Função que retorna o id do último produto cadastrado
@@ -298,6 +315,21 @@ def maior_id_produto() -> int:
 
     return dados[0][0]
 # maior_id_produto
+
+
+def quantidade_produtos_cadastrados() -> int:
+    """
+    Função que verifica a quantidade de produtos cadastrados
+    :return: quantidade de produtos cadastrados
+             -1 - se não houverem produtos cadastrados
+    """
+    dados = executa_query(f"SELECT COUNT(id) FROM produtos")
+
+    if len(dados) <= 0:
+        return -1
+
+    return dados[0][0]
+# quantidade_produtos_cadastrados
 
 
 def busca_produto_por_id(id_produto: int) -> tuple:
@@ -314,7 +346,24 @@ def busca_produto_por_id(id_produto: int) -> tuple:
         return ()
 
     return dados[0]
-# maior_id_produto
+# busca_produto_por_id
+
+
+def excluir_produto_banco(id_produto: int) -> bool:
+    """
+    Função que exclui um produto do banco
+    :param id_produto: id do produto a ser excluído
+    :return: True - se o produto for excluído com sucesso
+             False - se ocorrer algum erro durante a exclusão
+    """
+    descricao = descricao_produto(id_produto)
+
+    if not verificar_produto_existe(descricao):
+        if executa_comando(f"""DELETE FROM produtos WHERE id={id_produto}""") == 1:
+            return True
+
+    return False
+# excluir_produto_banco
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
