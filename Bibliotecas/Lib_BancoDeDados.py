@@ -32,6 +32,17 @@ def conectar_servidor() -> sqlite3.Connection:
         data_atualizacao TEXT NOT NULL);"""
                  )
 
+    conn.execute("""CREATE TABLE IF NOT EXISTS vendas(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quantidade_venda INTEGER NOT NULL,
+        preco_venda REAL NOT NULL,
+        data_venda TEXT NOT NULL,
+        id_produto INTEGER NOT NULL,
+        id_usuario INTEGER NOT NULL,
+        FOREIGN KEY(id_produto) REFERENCES produtos(id),
+        FOREIGN KEY(id_usuario) REFERENCES usuarios(id));"""
+                 )
+
     return conn
 # conectar_servidor
 
@@ -286,7 +297,7 @@ def verificar_produto_existe(descricao: str) -> bool:
 # verificar_produto_existe
 
 
-def descricao_produto(id_produto) -> str:
+def descricao_produto(id_produto: int) -> str:
     """
     Função que busca a descrição de um produto através do seu id
     :param id_produto: id do produto a ser buscado
@@ -364,6 +375,27 @@ def excluir_produto_banco(id_produto: int) -> bool:
 
     return False
 # excluir_produto_banco
+
+
+def alterar_produto_banco(id_produto: int, quantidade: int) -> bool:
+    """
+    Função que altera a quantidade de um produto em estoque
+    :param id_produto: id do produto a ser alterado
+    :param quantidade: quantidade do produto em estoque
+    :return: True - se a quantidade do produto for alterada com sucesso
+             False - se ocorrer algum erro durante a alteração
+    """
+    data_banco = data_atual_banco()
+
+    if data_banco != '':
+        descricao = descricao_produto(id_produto)
+        if not verificar_produto_existe(descricao):
+            if executa_comando(f"UPDATE produtos SET quantidade={quantidade}, "
+                               f"data_atualizacao='{data_banco}' WHERE id={id_produto}") == 1:
+                return True
+
+    return False
+# alterar_produto_banco
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------

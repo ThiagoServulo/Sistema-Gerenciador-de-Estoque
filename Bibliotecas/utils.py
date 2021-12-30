@@ -96,3 +96,16 @@ def retorna_numero_cargo_selecionado(self) -> int:
     elif self.radio_button_gerente.isChecked():
         return 3
 # retorna_numero_cargo_selecionado
+
+
+def valida_id_produto(id_produto_str: str) -> int:
+    if len(id_produto_str) <= 0:
+        return -1
+    else:
+        try:
+            id_produt_int = int(id_produto_str)
+        except ValueError:
+            return -1
+        else:
+            return id_produt_int
+# valida_id_produto

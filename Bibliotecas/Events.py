@@ -4,6 +4,8 @@ from tela_alterar_usuario.ui_tela_alterar_usuario import CriarTelaAlterarUsuario
 from tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
 from tela_principal.ui_tela_principal import CriarTelaPrincipal
 from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
+from tela_excluir_produto.ui_tela_excluir_produto import CriarTelaExcluirProduto
+from tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
 from Bibliotecas.Lib_BancoDeDados import *
 from PySide2.QtWidgets import *
 
@@ -30,16 +32,24 @@ class Eventos:
         self.tela_cadastrar_produto = CriarTelaCadastrarProduto()
         self.tela_cadastrar_produto.botao_cadastrar_produto.clicked.connect(self.cadastrar_produto)
 
+        self.tela_excluir_produto = CriarTelaExcluirProduto()
+        self.tela_excluir_produto.botao_excluir_produto.clicked.connect(self.excluir_produto)
+
+        self.tela_alterar_produto = CriarTelaAlterarProduto()
+        self.tela_alterar_produto.botao_alterar_produto.clicked.connect(self.alterar_produto)
+
         self.tela_principal = CriarTelaPrincipal()
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
         self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
         self.tela_principal.action_cadastrar_produto.triggered.connect(self.tela_cadastrar_produto.mostrar_tela)
+        self.tela_principal.action_alterar_produto.triggered.connect(self.tela_alterar_produto.mostrar_tela)
+        self.tela_principal.action_excluir_produto.triggered.connect(self.tela_excluir_produto.mostrar_tela)
     # __init__
 
     def iniciar(self) -> None:
         """
-        Função que inicia a aplicação apresentando a janela de login
+        Função que mostra a Tela de Login
         :return: None
         """
         self.tela_login.mostrar_tela()
@@ -47,7 +57,7 @@ class Eventos:
 
     def login(self) -> None:
         """
-        Função responsável por checar se os dados do usuário são válidos para este acessar o sistema
+        Função que valida os dados da Tela de Login
         :return: None
         """
         matricula = valida_matricula(self.tela_login.texto_matricula.text())
@@ -81,7 +91,7 @@ class Eventos:
 
     def abrir_tela_cadastrar_usuario(self) -> None:
         """
-        Função que abre a tela de cadastro de usuário
+        Função que mostra a Tela Cadastrar Usuários
         :return: None
         """
         self.tela_cadastrar_usuario.mostrar_tela()
@@ -90,7 +100,7 @@ class Eventos:
 
     def cadastrar_usuario(self) -> None:
         """
-        Função responsável por criar um novo usuário no banco de dados
+        Função que valida os dados da Tela Cadastrar Usuários
         :return: None
         """
         if len(self.tela_cadastrar_usuario.texto_usuario.text()) < 2:
@@ -144,7 +154,7 @@ class Eventos:
 
     def cadastrar_produto(self) -> None:
         """
-        Função responsável por validar os dados da tela de cadastro de produtos
+        Função que valida os dados da Tela Cadastrar Produtos
         :return: None
         """
         if len(self.tela_cadastrar_produto.texto_descricao.text()) < 1:
@@ -197,7 +207,7 @@ class Eventos:
 
     def alterar_usuario(self) -> None:
         """
-        Função que permite fazer alterações nos dados do usuário
+        Função que valida os dados da Tela Alterar Usuários
         :return: None
         """
         matricula = valida_matricula(self.tela_alterar_usuario.texto_matricula.text())
@@ -249,7 +259,7 @@ class Eventos:
 
     def excluir_usuario(self) -> None:
         """
-        Função que permite fazer a exclusão de um usuário
+        Função que valida os dados da Tela Excluir Usuário
         :return: None
         """
         matricula = valida_matricula(self.tela_excluir_usuario.texto_matricula.text())
@@ -278,12 +288,12 @@ class Eventos:
                     QMessageBox.critical(self.tela_excluir_usuario, 'Erro',
                                          f"<font face={self.fonte} size={self.tamanho}>"
                                          f"Erro ao excluir usuário {nome}</font>")
-            self.tela_excluir_usuario.hide()
+            self.tela_excluir_usuario.close()
     # excluir_usuario
 
     def atualizar_tabela_produtos(self) -> None:
         """
-        Função que atualiza a tabela de produtos
+        Função que atualiza a tabela de produtos na Tela Principal
         :return: Nenhum
         """
         quantidade_produtos = quantidade_produtos_cadastrados()
@@ -303,3 +313,79 @@ class Eventos:
                                                    QTableWidgetItem(str(tupla_produto[num_coluna])))
             num_linha += 1
     # atualizar_tabela_produtos
+
+    def excluir_produto(self) -> None:
+        """
+        Função que valida os dados da Tela Excluir Produtos
+        :return: Nenhum
+        """
+        id_produto_str = self.tela_excluir_produto.texto_id_produto.text()
+        id_produto_int = valida_id_produto(id_produto_str)
+        if id_produto_int == -1:
+            QMessageBox.critical(self.tela_excluir_produto, 'Erro',
+                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                 f"ID do produto inválido</font>")
+        else:
+            descricao = descricao_produto(id_produto_int)
+            if descricao == '':
+                QMessageBox.critical(self.tela_excluir_produto, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"O produto com ID: {id_produto_int} não foi encontrado</font>")
+            else:
+                opcao = QMessageBox.question(self.tela_excluir_usuario, 'Confirmar',
+                                             f"<font face={self.fonte} size={self.tamanho}>"
+                                             f"Deseja excluir o produto {descricao}?</font>",
+                                             QMessageBox.Yes | QMessageBox.No)
+                if opcao == QMessageBox.Yes:
+                    if excluir_produto_banco(id_produto_int):
+                        QMessageBox.information(self.tela_excluir_usuario, 'Sucesso',
+                                                f"<font face={self.fonte} size={self.tamanho}>"
+                                                f"O produto {descricao} foi excluído com sucesso</font>")
+                        self.atualizar_tabela_produtos()
+                    else:
+                        QMessageBox.critical(self.tela_excluir_usuario, 'Erro',
+                                             f"<font face={self.fonte} size={self.tamanho}>"
+                                             f"Erro ao excluir produto {descricao}</font>")
+                self.tela_excluir_produto.close()
+    # excluir_produto
+
+    def alterar_produto(self):
+        """
+        Função que valida os dados da Tela Alterar Produtos
+        :return:
+        """
+        id_produto_str = self.tela_alterar_produto.texto_id_produto.text()
+        id_produto_int = valida_id_produto(id_produto_str)
+        if id_produto_int == -1:
+            QMessageBox.critical(self.tela_alterar_produto, 'Erro',
+                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                 f"ID do produto inválido</font>")
+        else:
+            quantidade = self.tela_alterar_produto.spin_box_quantidade.value()
+            if quantidade <= 0:
+                QMessageBox.critical(self.tela_alterar_produto, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Quantidade do produto inválida</font>")
+            else:
+                descricao = descricao_produto(id_produto_int)
+                if descricao == '':
+                    QMessageBox.critical(self.tela_alterar_produto, 'Erro',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"O produto com ID: {id_produto_int} não foi encontrado</font>")
+                else:
+                    opcao = QMessageBox.question(self.tela_alterar_produto, 'Confirmar',
+                                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                                 f"Deseja alterar a quantidade do produto {descricao}?</font>",
+                                                 QMessageBox.Yes | QMessageBox.No)
+                    if opcao == QMessageBox.Yes:
+                        if alterar_produto_banco(id_produto_int, quantidade):
+                            QMessageBox.information(self.tela_alterar_produto, 'Sucesso',
+                                                    f"<font face={self.fonte} size={self.tamanho}>"
+                                                    f"O produto {descricao} foi alterado com sucesso</font>")
+                            self.atualizar_tabela_produtos()
+                        else:
+                            QMessageBox.critical(self.tela_alterar_produto, 'Erro',
+                                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                                 f"Erro ao alterar o produto {descricao}</font>")
+                    self.tela_alterar_produto.close()
+    # alterar_produto
