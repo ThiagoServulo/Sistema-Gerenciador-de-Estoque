@@ -34,13 +34,12 @@ def conectar_servidor() -> sqlite3.Connection:
 
     conn.execute("""CREATE TABLE IF NOT EXISTS vendas(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        descricao_produto TEXT NOT NULL,
         quantidade_venda INTEGER NOT NULL,
+        preco_compra REAL NOT NULL,
         preco_venda REAL NOT NULL,
         data_venda TEXT NOT NULL,
-        id_produto INTEGER NOT NULL,
-        id_usuario INTEGER NOT NULL,
-        FOREIGN KEY(id_produto) REFERENCES produtos(id),
-        FOREIGN KEY(id_usuario) REFERENCES usuarios(id));"""
+        nome_usuario TEXT NOT NULL);"""
                  )
 
     return conn
@@ -395,6 +394,57 @@ def alterar_produto_banco(id_produto: int, quantidade: int) -> bool:
                 return True
 
     return False
+# alterar_produto_banco
+
+
+def quantidade_produto(id_produto: int) -> int:
+    """
+    Função que retorna a quantidade de um produto em estoque
+    :param id_produto: id do produto a ser verificado
+    :return: quantidade do produto em estoque
+    """
+    dados = executa_query(f"SELECT quantidade FROM produtos WHERE id={id_produto}")
+    return dados[0][0]
+# quantidade_produto
+
+
+# --------------------------------------------------------------------------------------------------
+# ---------------------------------------- Funções de Vendas ---------------------------------------
+# --------------------------------------------------------------------------------------------------
+
+
+def adiciona_venda_banco(id_produto: int, quantidade: int, preco_venda: float, matricula: int) -> bool:
+    """
+    Função que adiciona oa dados da venda no banco
+    :param id_produto: id do produto vendido
+    :param quantidade: quantidade do produto vendida
+    :param preco_venda: preço unitário de venda do produto
+    :param matricula: matrícula do usuário responsável pela venda
+    :return: True - se a venda for adicionada corretamente
+             False - se ocorrer algum erro ao adicionar a venda
+    """
+    data_banco = data_atual_banco()
+    tupla_produto = busca_produto_por_id(id_produto)
+    descricao = tupla_produto[1]
+    preco_compra = tupla_produto[5]
+    usuario = nome_usuario(matricula)
+
+    if data_banco != '':
+        if executa_comando(f"""INSERT INTO vendas (descricao_produto, quantidade_venda, preco_compra, preco_venda,
+                                    data_venda, nome_usuario) VALUES ('{descricao}', {quantidade}, {preco_compra}, 
+                                    {preco_venda}, '{data_banco}', '{usuario}')""") == 1:
+            return True
+
+    return False
+# adiciona_venda_banco
+
+
+def teste():
+    dados = executa_query(f"SELECT * FROM vendas")
+
+    print(dados)
+
+    return dados[0][0]
 # alterar_produto_banco
 
 # --------------------------------------------------------------------------------------------------

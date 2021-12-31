@@ -39,12 +39,15 @@ class Eventos:
         self.tela_alterar_produto.botao_alterar_produto.clicked.connect(self.alterar_produto)
 
         self.tela_principal = CriarTelaPrincipal()
+        self.tela_principal.botao_adicionar_venda.clicked.connect(self.adicionar_venda)
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
         self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
         self.tela_principal.action_cadastrar_produto.triggered.connect(self.tela_cadastrar_produto.mostrar_tela)
         self.tela_principal.action_alterar_produto.triggered.connect(self.tela_alterar_produto.mostrar_tela)
         self.tela_principal.action_excluir_produto.triggered.connect(self.tela_excluir_produto.mostrar_tela)
+        self.tela_principal.action_relatorio_total.triggered.connect(teste)
+
     # __init__
 
     def iniciar(self) -> None:
@@ -389,3 +392,70 @@ class Eventos:
                                                  f"Erro ao alterar o produto {descricao}</font>")
                     self.tela_alterar_produto.close()
     # alterar_produto
+
+    def adicionar_venda(self) -> None:
+        """
+        Função que valida os dados de venda da Tela Principal
+        :return: Nenhum
+        """
+        id_produto_str = self.tela_principal.texto_codigo_produto.text()
+        id_produto_int = valida_id_produto(id_produto_str)
+        if id_produto_int == -1:
+            QMessageBox.critical(self.tela_principal, 'Erro',
+                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                 f"ID do produto inválido</font>")
+        else:
+            quantidade_venda = self.tela_principal.spin_box_quantidade.value()
+            if quantidade_venda <= 0:
+                QMessageBox.critical(self.tela_principal, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Quantidade do produto inválida</font>")
+            else:
+                preco_venda = self.tela_principal.double_spin_box_preco_venda.value()
+                if preco_venda <= 0:
+                    QMessageBox.critical(self.tela_principal, 'Erro',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"Preço de venda do produto inválido</font>")
+                else:
+                    descricao = descricao_produto(id_produto_int)
+                    if descricao == '':
+                        QMessageBox.critical(self.tela_principal, 'Erro',
+                                             f"<font face={self.fonte} size={self.tamanho}>"
+                                             f"O produto com ID: {id_produto_int} não foi encontrado"
+                                             f"</font>")
+                    else:
+                        quantidade_estoque = quantidade_produto(id_produto_int)
+                        print(quantidade_estoque)
+                        if quantidade_venda > quantidade_estoque:
+                            QMessageBox.critical(self.tela_principal, 'Erro',
+                                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                                 f"O estoque não possui a quantidade de produto suficiente"
+                                                 f"para esta venda</font>")
+                        else:
+                            if not alterar_produto_banco(id_produto_int, (quantidade_estoque - quantidade_venda)):
+                                QMessageBox.critical(self.tela_principal, 'Erro',
+                                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                                     f"Erro ao adicionar venda</font>")
+                            else:
+                                opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
+                                                             f"<font face={self.fonte} size={self.tamanho}>"
+                                                             f"Deseja adiconar esta venda?"
+                                                             f"\n\nProduto: {descricao}"
+                                                             f"\nQuantidade: {quantidade_venda}"
+                                                             f"\nPreço de venda: {preco_venda}</font>",
+                                                             QMessageBox.Yes | QMessageBox.No)
+                                if opcao == QMessageBox.Yes:
+                                    matricula = self.tela_principal.texto_matricula.text()
+                                    if adiciona_venda_banco(id_produto_int, quantidade_venda,
+                                                            preco_venda, int(matricula)):
+                                        QMessageBox.information(self.tela_principal, 'Sucesso',
+                                                                f"<font face={self.fonte} size={self.tamanho}>"
+                                                                f"A venda do produto {descricao} foi adicionada"
+                                                                f"com sucesso</font>")
+                                        self.atualizar_tabela_produtos()
+                                    else:
+                                        QMessageBox.critical(self.tela_principal, 'Erro',
+                                                             f"<font face={self.fonte} size={self.tamanho}>"
+                                                             f"Erro ao adicionar a venda do produto {descricao}"
+                                                             f"</font>")
+    # adicionar_venda
