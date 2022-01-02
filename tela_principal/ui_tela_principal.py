@@ -5,6 +5,11 @@ import sys
 
 
 class Ui_tela_principal(object):
+
+    maior_coluna_1 = 0
+    maior_coluna_2 = 0
+    maior_coluna_3 = 0
+
     def __init__(self):
         self.action_cadastrar_usuario = QAction()
         self.action_alterar_usuario = QAction()
@@ -12,11 +17,11 @@ class Ui_tela_principal(object):
         self.action_cadastrar_produto = QAction()
         self.action_alterar_produto = QAction()
         self.action_excluir_produto = QAction()
-        self.action_relatorio_total = QAction()
-        self.action_relatorio_dia = QAction()
-        self.action_relatorio_completo = QAction()
-        self.action_relatorio_customizado = QAction()
-        self.action_relatorio_quantidade = QAction()
+        self.action_relatorio_vendas_total = QAction()
+        self.action_relatorio_vendas_dia = QAction()
+        self.action_relatorio_produtos_completo = QAction()
+        self.action_relatorio_produtos_customizado = QAction()
+        self.action_relatorio_produtos_quantidade = QAction()
         self.centralwidget = QWidget()
         self.gridLayout = QGridLayout()
         self.group_box_vendas = QGroupBox()
@@ -44,7 +49,7 @@ class Ui_tela_principal(object):
         self.menu_usuarios = QMenu()
         self.menu_produtos = QMenu()
         self.menu_relatorios_vendas = QMenu()
-        self.menu_relatorio_estoque = QMenu()
+        self.menu_relatorio_produtos = QMenu()
     # __init__
 
     def setupUi(self, tela_principal):
@@ -83,25 +88,25 @@ class Ui_tela_principal(object):
         self.action_excluir_produto.setText("Excluir")
         self.action_excluir_produto.setShortcut("F6")
 
-        self.action_relatorio_total = QAction(tela_principal)
-        self.action_relatorio_total.setText("Relatório Total")
-        # self.action_relatorio_total.setShortcut("F4")
+        self.action_relatorio_vendas_total = QAction(tela_principal)
+        self.action_relatorio_vendas_total.setText("Relatório Total")
+        self.action_relatorio_vendas_total.setShortcut("F7")
 
-        self.action_relatorio_dia = QAction(tela_principal)
-        self.action_relatorio_dia.setText("Relatório Dia")
-        # self.action_relatorio_dia.setShortcut("F5")
+        self.action_relatorio_vendas_dia = QAction(tela_principal)
+        self.action_relatorio_vendas_dia.setText("Relatório Dia")
+        self.action_relatorio_vendas_dia.setShortcut("F8")
 
-        self.action_relatorio_completo = QAction(tela_principal)
-        self.action_relatorio_completo.setText("Relatório Completo")
-        # self.action_relatorio_completo.setShortcut("F6")
+        self.action_relatorio_produtos_completo = QAction(tela_principal)
+        self.action_relatorio_produtos_completo.setText("Relatório Completo")
+        # self.action_relatorio_produtos_completo.setShortcut("F6")
 
-        self.action_relatorio_customizado = QAction(tela_principal)
-        self.action_relatorio_customizado.setText("Relatório por Produto")
-        # self.action_relatorio_customizado.setShortcut("F7")
+        self.action_relatorio_produtos_customizado = QAction(tela_principal)
+        self.action_relatorio_produtos_customizado.setText("Relatório por Produto")
+        # self.action_relatorio_produtos_customizado.setShortcut("F7")
 
-        self.action_relatorio_quantidade = QAction(tela_principal)
-        self.action_relatorio_quantidade.setText("Relatório por Quantidade")
-        # self.action_relatorio_quantidade.setShortcut("F8")
+        self.action_relatorio_produtos_quantidade = QAction(tela_principal)
+        self.action_relatorio_produtos_quantidade.setText("Relatório por Quantidade")
+        # self.action_relatorio_produtos_quantidade.setShortcut("F8")
 
         self.centralwidget = QWidget(tela_principal)
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -263,14 +268,17 @@ class Ui_tela_principal(object):
         __qtablewidgetitem1 = QTableWidgetItem()
         __qtablewidgetitem1.setText('Descrição')
         __qtablewidgetitem1.setFont(font_header)
+        self.maior_coluna_1 = (len(__qtablewidgetitem1.text()))
         self.tabela.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
         __qtablewidgetitem2.setText('Marca')
         __qtablewidgetitem2.setFont(font_header)
+        self.maior_coluna_2 = (len(__qtablewidgetitem2.text()))
         self.tabela.setHorizontalHeaderItem(2, __qtablewidgetitem2)
         __qtablewidgetitem3 = QTableWidgetItem()
         __qtablewidgetitem3.setText('Fabricante')
         __qtablewidgetitem3.setFont(font_header)
+        self.maior_coluna_3 = (len(__qtablewidgetitem3.text()))
         self.tabela.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         __qtablewidgetitem4 = QTableWidgetItem()
         __qtablewidgetitem4.setText('Quantidade')
@@ -310,16 +318,16 @@ class Ui_tela_principal(object):
 
         self.menu_relatorios_vendas = QMenu(self.menubar)
         self.menu_relatorios_vendas.setTitle("Relatórios Vendas")
-        self.menu_relatorios_vendas.addAction(self.action_relatorio_total)
-        self.menu_relatorios_vendas.addAction(self.action_relatorio_dia)
+        self.menu_relatorios_vendas.addAction(self.action_relatorio_vendas_total)
+        self.menu_relatorios_vendas.addAction(self.action_relatorio_vendas_dia)
         self.menubar.addAction(self.menu_relatorios_vendas.menuAction())
 
-        self.menu_relatorio_estoque = QMenu(self.menubar)
-        self.menu_relatorio_estoque.setTitle("Relatório Estoque")
-        self.menu_relatorio_estoque.addAction(self.action_relatorio_completo)
-        self.menu_relatorio_estoque.addAction(self.action_relatorio_customizado)
-        self.menu_relatorio_estoque.addAction(self.action_relatorio_quantidade)
-        self.menubar.addAction(self.menu_relatorio_estoque.menuAction())
+        self.menu_relatorio_produtos = QMenu(self.menubar)
+        self.menu_relatorio_produtos.setTitle("Relatório Estoque")
+        self.menu_relatorio_produtos.addAction(self.action_relatorio_produtos_completo)
+        self.menu_relatorio_produtos.addAction(self.action_relatorio_produtos_customizado)
+        self.menu_relatorio_produtos.addAction(self.action_relatorio_produtos_quantidade)
+        self.menubar.addAction(self.menu_relatorio_produtos.menuAction())
 
         tela_principal.setMenuBar(self.menubar)
     # setupUi
@@ -334,15 +342,15 @@ class CriarTelaPrincipal(QMainWindow, Ui_tela_principal):
     def mostrar_tela(self, cargo_usuario: int):
         if cargo_usuario == 1:
             self.menu_usuarios.setEnabled(False)
-            self.menu_relatorio_estoque.setEnabled(False)
+            self.menu_relatorio_produtos.setEnabled(False)
             self.menu_relatorios_vendas.setEnabled(False)
         elif cargo_usuario == 2:
             self.menu_usuarios.setEnabled(False)
-            self.menu_relatorio_estoque.setEnabled(True)
+            self.menu_relatorio_produtos.setEnabled(True)
             self.menu_relatorios_vendas.setEnabled(True)
         else:
             self.menu_usuarios.setEnabled(True)
-            self.menu_relatorio_estoque.setEnabled(True)
+            self.menu_relatorio_produtos.setEnabled(True)
             self.menu_relatorios_vendas.setEnabled(True)
         self.show()
     # mostrar_tela

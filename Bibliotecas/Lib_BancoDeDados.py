@@ -439,13 +439,20 @@ def adiciona_venda_banco(id_produto: int, quantidade: int, preco_venda: float, m
 # adiciona_venda_banco
 
 
-def teste():
-    dados = executa_query(f"SELECT * FROM vendas")
+def busca_dados_vendas(data: str) -> list[tuple]:
+    """
+    Função que busca dados da venda pela data.
+    Se a data informada for uma string vazia, será buscado todas as vendas
+    :param data: data das vendas a serem buscadas
+    :return: lista de tuplas contendo os dados da venda
+    """
+    if data == '':
+        dados = executa_query(f"SELECT * FROM vendas")
+    else:
+        dados = executa_query(f"SELECT * FROM vendas WHERE data_venda={data}")
 
-    print(dados)
-
-    return dados[0][0]
-# alterar_produto_banco
+    return dados
+# busca_dados_vendas
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------

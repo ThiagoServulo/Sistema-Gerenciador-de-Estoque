@@ -7,6 +7,7 @@ from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
 from tela_excluir_produto.ui_tela_excluir_produto import CriarTelaExcluirProduto
 from tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
 from Bibliotecas.Lib_BancoDeDados import *
+from Bibliotecas.Lib_Arquivos_CSV import *
 from PySide2.QtWidgets import *
 
 
@@ -46,7 +47,7 @@ class Eventos:
         self.tela_principal.action_cadastrar_produto.triggered.connect(self.tela_cadastrar_produto.mostrar_tela)
         self.tela_principal.action_alterar_produto.triggered.connect(self.tela_alterar_produto.mostrar_tela)
         self.tela_principal.action_excluir_produto.triggered.connect(self.tela_excluir_produto.mostrar_tela)
-        self.tela_principal.action_relatorio_total.triggered.connect(teste)
+        self.tela_principal.action_relatorio_vendas_total.triggered.connect(self.gerar_relatorio_vendas_total)
 
     # __init__
 
@@ -148,7 +149,7 @@ class Eventos:
                 opcao = QMessageBox.information(self.tela_cadastrar_usuario, 'Sucesso',
                                                 f"<font face={self.fonte} size={self.tamanho}>"
                                                 f"O usuário {nome} foi adicionado com sucesso."
-                                                f"\nNúmero de matrícula: {num_matricula_usuario(nome)}</font>")
+                                                f"Número de matrícula: {num_matricula_usuario(nome)}</font>")
                 if opcao == QMessageBox.StandardButton.Ok:
                     self.tela_cadastrar_usuario.close()
                     if not self.tela_principal.isVisible():
@@ -311,11 +312,29 @@ class Eventos:
             num_produto += 1
             if tupla_produto == ():
                 continue
+            self.formata_colunas_tabela_produtos(tupla_produto)
             for num_coluna in range(7):
                 self.tela_principal.tabela.setItem(num_linha, num_coluna,
                                                    QTableWidgetItem(str(tupla_produto[num_coluna])))
             num_linha += 1
+        self.tela_principal.tabela.setColumnWidth(1, self.tela_principal.maior_coluna_1 * 10)
+        self.tela_principal.tabela.setColumnWidth(2, self.tela_principal.maior_coluna_2 * 12)
+        self.tela_principal.tabela.setColumnWidth(3, self.tela_principal.maior_coluna_3 * 10)
     # atualizar_tabela_produtos
+
+    def formata_colunas_tabela_produtos(self, tupla_produto: tuple) -> None:
+        """
+        Função que compara e salva a maior string de cada colua da tabela para auxiliar na sua formatação
+        :param tupla_produto: tupla contendo os dados dos produtos
+        :return: Nenhum
+        """
+        if len(tupla_produto[1]) > self.tela_principal.maior_coluna_1:
+            self.tela_principal.maior_coluna_1 = len(tupla_produto[1])
+        if len(tupla_produto[2]) > self.tela_principal.maior_coluna_2:
+            self.tela_principal.maior_coluna_2 = len(tupla_produto[2])
+        if len(tupla_produto[3]) > self.tela_principal.maior_coluna_3:
+            self.tela_principal.maior_coluna_3 = len(tupla_produto[3])
+    # formata_colunas_tabela_produtos
 
     def excluir_produto(self) -> None:
         """
@@ -440,9 +459,9 @@ class Eventos:
                                 opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
                                                              f"<font face={self.fonte} size={self.tamanho}>"
                                                              f"Deseja adiconar esta venda?"
-                                                             f"\n\nProduto: {descricao}"
-                                                             f"\nQuantidade: {quantidade_venda}"
-                                                             f"\nPreço de venda: {preco_venda}</font>",
+                                                             f"Produto: {descricao}."
+                                                             f"Quantidade: {quantidade_venda}."
+                                                             f"Preço de venda: {preco_venda}</font>",
                                                              QMessageBox.Yes | QMessageBox.No)
                                 if opcao == QMessageBox.Yes:
                                     matricula = self.tela_principal.texto_matricula.text()
@@ -459,3 +478,13 @@ class Eventos:
                                                              f"Erro ao adicionar a venda do produto {descricao}"
                                                              f"</font>")
     # adicionar_venda
+
+    def gerar_relatorio_vendas_total(self) -> None:
+        """
+        Função que gera o relatório total de vendas
+        :return: Nenhum
+        """
+        data = data_atual_banco()
+        lista_vendas = busca_dados_vendas('')
+        gera_relatorio_csv_vendas(lista_vendas, data)
+    # gerar_relatorio_vendas_total
