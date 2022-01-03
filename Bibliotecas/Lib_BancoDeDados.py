@@ -1,5 +1,6 @@
 import sqlite3
 from Bibliotecas.utils import *
+from collections import namedtuple
 
 
 # --------------------------------------------------------------------------------------------------
@@ -439,19 +440,30 @@ def adiciona_venda_banco(id_produto: int, quantidade: int, preco_venda: float, m
 # adiciona_venda_banco
 
 
-def busca_dados_vendas(data: str) -> list[tuple]:
+def busca_dados_vendas(data: str) -> list[namedtuple]:
     """
     Função que busca dados da venda pela data.
     Se a data informada for uma string vazia, será buscado todas as vendas
     :param data: data das vendas a serem buscadas
-    :return: lista de tuplas contendo os dados da venda
+    :return: lista de named tuplas contendo os dados da venda
     """
+    lista_vendas = []
+
     if data == '':
         dados = executa_query(f"SELECT * FROM vendas")
     else:
         dados = executa_query(f"SELECT * FROM vendas WHERE data_venda={data}")
 
-    return dados
+    for dado in dados:
+        tupla_venda = namedtuple('tupla_dado', 'codigo, descricao, quantidade, preco_compra, preco_venda, '
+                                               'lucro_liquido, lucro_percentual, data, funcionario')
+        lucro_liquido = (dado[4] - dado[3]) * dado[2]
+        lucro_percentual = (lucro_liquido / (dado[4] * dado[2])) * 100
+        lista_vendas.append(tupla_venda(codigo=dado[0], descricao=dado[1], quantidade=dado[2], preco_compra=dado[3],
+                                        preco_venda=dado[4], lucro_liquido=lucro_liquido,
+                                        lucro_percentual=lucro_percentual, data=dado[5], funcionario=dado[6]))
+
+    return lista_vendas
 # busca_dados_vendas
 
 # --------------------------------------------------------------------------------------------------
