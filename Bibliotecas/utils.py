@@ -1,4 +1,5 @@
 from passlib.hash import pbkdf2_sha256 as cryp
+import datetime
 
 
 def converter_id_para_matricula(id_usuario: int) -> int:
@@ -99,6 +100,12 @@ def retorna_numero_cargo_selecionado(self) -> int:
 
 
 def valida_id_produto(id_produto_str: str) -> int:
+    """
+    Função que valida o id do produto
+    :param id_produto_str: id do produto no formato String
+    :return: retorna o id do produto no formato int se ele for válido,
+             caso contrário será retornado o valor -1
+    """
     if len(id_produto_str) <= 0:
         return -1
     else:
@@ -109,3 +116,22 @@ def valida_id_produto(id_produto_str: str) -> int:
         else:
             return id_produt_int
 # valida_id_produto
+
+
+def valida_data(dia: int, mes: int, ano: int) -> bool:
+    """
+    Função que verifica se a data selecionada é válida, ou seja, se a data selecionada é menor ou igual a atual
+    :param dia: dia selecionado
+    :param mes: mês selecionado
+    :param ano: ano selecionado
+    :return: True - se a data selecionada for válida
+             False - se a data selecionada for inválida
+    """
+    data_selecionada = datetime.date(day=dia, month=mes, year=ano)
+    data_atual = datetime.date.today()
+    delta = data_atual - data_selecionada
+    if delta.days >= 0:
+        return True
+    else:
+        return False
+# valida_data

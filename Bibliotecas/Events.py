@@ -6,9 +6,11 @@ from tela_principal.ui_tela_principal import CriarTelaPrincipal
 from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
 from tela_excluir_produto.ui_tela_excluir_produto import CriarTelaExcluirProduto
 from tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
+from tela_relatorio_vendas_data.ui_tela_relatorios_venda_data import CriarTelaSelecionarDataRelatorioVendas
 from Bibliotecas.Lib_BancoDeDados import *
 from Bibliotecas.Lib_Arquivos_CSV import *
 from PySide2.QtWidgets import *
+# import PySide2.QtCore
 
 
 class Eventos:
@@ -39,6 +41,9 @@ class Eventos:
         self.tela_alterar_produto = CriarTelaAlterarProduto()
         self.tela_alterar_produto.botao_alterar_produto.clicked.connect(self.alterar_produto)
 
+        self.tela_selecionar_data_relatorio_vendas = CriarTelaSelecionarDataRelatorioVendas()
+        self.tela_selecionar_data_relatorio_vendas.botao_confirmar.clicked.connect(self.gerar_relatorio_vendas_dia)
+
         self.tela_principal = CriarTelaPrincipal()
         self.tela_principal.botao_adicionar_venda.clicked.connect(self.adicionar_venda)
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
@@ -48,6 +53,8 @@ class Eventos:
         self.tela_principal.action_alterar_produto.triggered.connect(self.tela_alterar_produto.mostrar_tela)
         self.tela_principal.action_excluir_produto.triggered.connect(self.tela_excluir_produto.mostrar_tela)
         self.tela_principal.action_relatorio_vendas_total.triggered.connect(self.gerar_relatorio_vendas_total)
+        self.tela_principal.action_relatorio_vendas_dia.triggered.\
+            connect(self.tela_selecionar_data_relatorio_vendas.mostrar_tela)
 
     # __init__
 
@@ -316,6 +323,7 @@ class Eventos:
             for num_coluna in range(7):
                 self.tela_principal.tabela.setItem(num_linha, num_coluna,
                                                    QTableWidgetItem(str(tupla_produto[num_coluna])))
+                # todo: .setFlags(PySide2.QtCore.Qt.ItemIsEnabled)
             num_linha += 1
         self.tela_principal.tabela.setColumnWidth(1, self.tela_principal.maior_coluna_1 * 10)
         self.tela_principal.tabela.setColumnWidth(2, self.tela_principal.maior_coluna_2 * 12)
@@ -458,9 +466,9 @@ class Eventos:
                             else:
                                 opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
                                                              f"<font face={self.fonte} size={self.tamanho}>"
-                                                             f"Deseja adiconar esta venda?"
-                                                             f"Produto: {descricao}."
-                                                             f"Quantidade: {quantidade_venda}."
+                                                             f"Deseja adiconar esta venda? "
+                                                             f"Produto: {descricao}. "
+                                                             f"Quantidade: {quantidade_venda}. "
                                                              f"Preço de venda: {preco_venda}</font>",
                                                              QMessageBox.Yes | QMessageBox.No)
                                 if opcao == QMessageBox.Yes:
@@ -469,7 +477,7 @@ class Eventos:
                                                             preco_venda, int(matricula)):
                                         QMessageBox.information(self.tela_principal, 'Sucesso',
                                                                 f"<font face={self.fonte} size={self.tamanho}>"
-                                                                f"A venda do produto {descricao} foi adicionada"
+                                                                f"A venda do produto {descricao} foi adicionada "
                                                                 f"com sucesso</font>")
                                         self.atualizar_tabela_produtos()
                                     else:
@@ -484,7 +492,51 @@ class Eventos:
         Função que gera o relatório total de vendas
         :return: Nenhum
         """
-        data = data_atual_banco()
-        lista_vendas = busca_dados_vendas('')
-        gera_relatorio_csv_vendas(lista_vendas, data)
+        opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Deseja gerar relatório total de vendas?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if opcao == QMessageBox.Yes:
+            data = data_atual_banco()
+            lista_vendas = busca_dados_vendas('')
+            if not lista_vendas:
+                QMessageBox.critical(self.tela_principal, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Erro ao buscar dados das vendas</font>")
+                return
+            if gera_relatorio_csv_vendas(lista_vendas, data):
+                QMessageBox.information(self.tela_principal, 'Sucesso',
+                                        f"<font face={self.fonte} size={self.tamanho}>"
+                                        f"Relatório gerado com sucesso</font>")
+            else:
+                QMessageBox.critical(self.tela_principal, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Erro ao gerar relatório de vendas</font>")
     # gerar_relatorio_vendas_total
+
+    def gerar_relatorio_vendas_dia(self) -> None:
+        """
+        Função que valida os dados da Tela de Seleção de Data para gerar Relatório de Vendas
+        :return: Nenhum
+        """
+        data_selecionada = str(self.tela_selecionar_data_relatorio_vendas.calendario.selectedDate())
+        data_selecionada = data_selecionada.split('(')[1]
+        data_selecionada = data_selecionada.split(')')[0]
+        data_selecionada = data_selecionada.split(', ')
+        dia = int(data_selecionada[2])
+        mes = int(data_selecionada[1])
+        ano = int(data_selecionada[0])
+        if valida_data(dia, mes, ano):
+            opcao = QMessageBox.question(self.tela_selecionar_data_relatorio_vendas, 'Confirmar',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"Deseja gerar relatório de vendas do dia "
+                                         f"{dia}/{mes}/{ano} ?</font>",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if opcao == QMessageBox.Yes:
+                print('Gerar relatorio')
+        else:
+            QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
+                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                 f"A data escolhida deve ser menor ou igual a atual"
+                                 f"</font>")
+    # gerar_relatorio_vendas_dia

@@ -20,19 +20,25 @@ def gera_relatorio_csv_vendas(lista_vendas: list[namedtuple], data_atual: str) -
             escritor = writer(arquivo, delimiter=';')
             escritor.writerow(['Código', 'Descrição', 'Quantidade', 'Preço compra unitário', 'Preço venda unitário',
                                'Lucro líquido', 'Lucro percentual', 'Data', 'Funcionário'])
-            for venda in lista_vendas:
-                # TODO: trocar . por , nos dados float
-                escritor.writerow([venda.codigo, venda.descricao, venda.quantidade, venda.preco_compra,
-                                   venda.preco_venda, venda.lucro_liquido, f'{venda.lucro_percentual}%',
-                                   venda.data, venda.funcionario])
 
+            for venda in lista_vendas:
                 quantidade_total += venda.quantidade
                 lucro_total += venda.lucro_liquido
                 preco_compra_total += venda.preco_compra * venda.quantidade
                 preco_venda_total += venda.preco_venda * venda.quantidade
 
-            escritor.writerow(['Total', '-', quantidade_total, preco_compra_total, preco_venda_total, lucro_total,
-                              '-', '-', '-'])
+                escritor.writerow([venda.codigo, venda.descricao, venda.quantidade,
+                                   str(venda.preco_compra).replace('.', ','),
+                                   str(venda.preco_venda).replace('.', ','),
+                                   str(venda.lucro_liquido).replace('.', ','),
+                                   f"{str(venda.lucro_percentual).replace('.', ',')}%",
+                                   venda.data, venda.funcionario])
+
+            escritor.writerow(['Total', '-', str(quantidade_total).replace('.', ','),
+                               str(preco_compra_total).replace('.', ','),
+                               str(preco_venda_total).replace('.', ','),
+                               str(lucro_total).replace('.', ','),
+                               '-', '-', '-'])
             return True
         return False
 
