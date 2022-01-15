@@ -1,19 +1,22 @@
-from tela_login.ui_tela_login import CriarTelaLogin
-from tela_cadastrar_usuario.ui_tela_cadastrar_usuario import CriarTelaCadastrarUsuario
-from tela_alterar_usuario.ui_tela_alterar_usuario import CriarTelaAlterarUsuario
-from tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
-from tela_principal.ui_tela_principal import CriarTelaPrincipal
-from tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
-from tela_excluir_produto.ui_tela_excluir_produto import CriarTelaExcluirProduto
-from tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
-from tela_relatorio_vendas_data.ui_tela_relatorios_venda_data import CriarTelaSelecionarDataRelatorioVendas
+from telas.tela_login.ui_tela_login import CriarTelaLogin
+from telas.telas_usuario.tela_cadastrar_usuario.ui_tela_cadastrar_usuario import CriarTelaCadastrarUsuario
+from telas.telas_usuario.tela_alterar_usuario.ui_tela_alterar_usuario import CriarTelaAlterarUsuario
+from telas.telas_produto.tela_cadastrar_produto.ui_tela_cadastrar_produto import CriarTelaCadastrarProduto
+from telas.tela_principal.ui_tela_principal import CriarTelaPrincipal
+from telas.telas_usuario.tela_excluir_usuario.ui_tela_excluir_usuario import CriarTelaExcluirUsuario
+from telas.telas_produto.tela_excluir_produto.ui_tela_excluir_produto import CriarTelaExcluirProduto
+from telas.telas_produto.tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
+from telas.telas_relatorio.tela_relatorio_vendas_data.ui_tela_relatorios_venda_data \
+    import CriarTelaSelecionarDataRelatorioVendas
 from Bibliotecas.Lib_BancoDeDados import *
 from Bibliotecas.Lib_Arquivos_CSV import *
 from PySide2.QtWidgets import *
-# import PySide2.QtCore
 
 
 class Eventos:
+    """
+    Classe eventos contém todos os eventos do programa e suas tratativas
+    """
 
     fonte = 'MS Shell Dlg 2'
     tamanho = 4
@@ -46,6 +49,7 @@ class Eventos:
 
         self.tela_principal = CriarTelaPrincipal()
         self.tela_principal.botao_adicionar_venda.clicked.connect(self.adicionar_venda)
+        self.tela_principal.action_deslogar.triggered.connect(self.log_out)
         self.tela_principal.action_cadastrar_usuario.triggered.connect(self.tela_cadastrar_usuario.mostrar_tela)
         self.tela_principal.action_alterar_usuario.triggered.connect(self.tela_alterar_usuario.mostrar_tela)
         self.tela_principal.action_excluir_usuario.triggered.connect(self.tela_excluir_usuario.mostrar_tela)
@@ -99,6 +103,20 @@ class Eventos:
                 self.atualizar_tabela_produtos()
                 self.tela_principal.mostrar_tela(cargo)
     # login
+
+    def log_out(self):
+        """
+        Função responsável por deslogar o usuário conectado do sistema, voltando a tela de login
+        :return: Nenhum
+        """
+        opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Deseja fazer o log out?</font>",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if opcao == QMessageBox.Yes:
+            self.tela_principal.close()
+            self.iniciar()
+    # log_out
 
     def abrir_tela_cadastrar_usuario(self) -> None:
         """
@@ -502,9 +520,11 @@ class Eventos:
             if not lista_vendas:
                 QMessageBox.critical(self.tela_principal, 'Erro',
                                      f"<font face={self.fonte} size={self.tamanho}>"
-                                     f"Erro ao buscar dados das vendas</font>")
+                                     f"Nenhuma venda encontrada</font>")
                 return
-            if gera_relatorio_csv_vendas(lista_vendas, data):
+            data = data.replace('/', '_')
+            nome_arquivo = f'relatorio_vendas_total_{data}'
+            if gera_relatorio_csv_vendas(1, nome_arquivo, lista_vendas):
                 QMessageBox.information(self.tela_principal, 'Sucesso',
                                         f"<font face={self.fonte} size={self.tamanho}>"
                                         f"Relatório gerado com sucesso</font>")
@@ -533,10 +553,26 @@ class Eventos:
                                          f"{dia}/{mes}/{ano} ?</font>",
                                          QMessageBox.Yes | QMessageBox.No)
             if opcao == QMessageBox.Yes:
-                print('Gerar relatorio')
+                data = data_atual_banco()
+                lista_vendas = busca_dados_vendas(str(data))
+                if not lista_vendas:
+                    QMessageBox.critical(self.tela_principal, 'Erro',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"Nenhuma venda encontrada</font>")
+                    return
+                data = f'{str(dia)}'.zfill(2) + '_' + f'{str(mes)}'.zfill(2) + '_' + f'{str(ano)}'.zfill(4)
+                nome_arquivo = f'relatorio_vendas_dia_{data}'
+                if gera_relatorio_csv_vendas(2, nome_arquivo, lista_vendas):
+                    QMessageBox.information(self.tela_selecionar_data_relatorio_vendas, 'Sucesso',
+                                            f"<font face={self.fonte} size={self.tamanho}>"
+                                            f"Relatório gerado com sucesso</font>")
+                    self.tela_selecionar_data_relatorio_vendas.close()
+                else:
+                    QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"Erro ao gerar relatório de vendas</font>")
         else:
             QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
                                  f"<font face={self.fonte} size={self.tamanho}>"
-                                 f"A data escolhida deve ser menor ou igual a atual"
-                                 f"</font>")
+                                 f"A data escolhida deve ser menor ou igual a atual</font>")
     # gerar_relatorio_vendas_dia

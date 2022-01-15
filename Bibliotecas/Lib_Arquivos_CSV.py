@@ -1,22 +1,29 @@
 from csv import writer
+from typing import Literal
 from collections import namedtuple
 import os
 
 
-def gera_relatorio_csv_vendas(lista_vendas: list[namedtuple], data_atual: str) -> bool:
+def gera_relatorio_csv_vendas(tipo_relatorio: Literal[1, 2], nome_arquivo: str, lista_vendas: list[namedtuple]) -> bool:
     """
     Função que gera o relatório de vendas em um arquivo csv
+    :param tipo_relatorio: tipo de relatório que será gerado
+                           1 - relatório total
+                           2 - relatório de uma data específica
+    :param nome_arquivo: nome do arquivo de relatório de vendas que será gerado
     :param lista_vendas: lista condendo os dados de todas as vendas
-    :param data_atual: data atual do sistema para nomear o arquivo
     :return: True - se o relatório for gerado com sucesso
              False - se ocorrer um erro ao gerar o relatório
     """
     quantidade_total = preco_compra_total = preco_venda_total = lucro_total = 0
-    data_atual = data_atual.replace('/', '_')
-    os.makedirs('.\\Relatorios\\Relatorios_vendas', exist_ok=True)
+    if tipo_relatorio == 1:
+        os.makedirs('.\\Relatorios\\Relatorios_vendas_total', exist_ok=True)
+        path = f'.\\Relatorios\\Relatorios_vendas_total\\{nome_arquivo}.csv'
+    else:
+        os.makedirs('.\\Relatorios\\Relatorios_vendas_data', exist_ok=True)
+        path = f'.\\Relatorios\\Relatorios_vendas_data\\{nome_arquivo}.csv'
     try:
-        with open(f'.\\Relatorios\\Relatorios_vendas\\relatorio_vendas_total_{data_atual}.csv', 'w',
-                  newline='') as arquivo:
+        with open(path, 'w', newline='') as arquivo:
             escritor = writer(arquivo, delimiter=';')
             escritor.writerow(['Código', 'Descrição', 'Quantidade', 'Preço compra unitário', 'Preço venda unitário',
                                'Lucro líquido', 'Lucro percentual', 'Data', 'Funcionário'])

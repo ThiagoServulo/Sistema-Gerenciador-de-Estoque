@@ -11,6 +11,7 @@ class Ui_tela_principal(object):
     maior_coluna_3 = 0
 
     def __init__(self):
+        self.action_deslogar = QAction()
         self.action_cadastrar_usuario = QAction()
         self.action_alterar_usuario = QAction()
         self.action_excluir_usuario = QAction()
@@ -64,41 +65,45 @@ class Ui_tela_principal(object):
         tela_principal.setWindowTitle(u"Gerenciador de Estoque")
         tela_principal.setWindowIcon(icon)
 
+        self.action_deslogar = QAction(tela_principal)
+        self.action_deslogar.setText("Deslogar")
+        self.action_deslogar.setShortcut("F1")
+
         self.action_cadastrar_usuario = QAction(tela_principal)
         self.action_cadastrar_usuario.setText("Cadastrar")
-        self.action_cadastrar_usuario.setShortcut("F1")
+        self.action_cadastrar_usuario.setShortcut("F2")
 
         self.action_alterar_usuario = QAction(tela_principal)
         self.action_alterar_usuario.setText("Alterar")
-        self.action_alterar_usuario.setShortcut("F2")
+        self.action_alterar_usuario.setShortcut("F3")
 
         self.action_excluir_usuario = QAction(tela_principal)
         self.action_excluir_usuario.setText("Excluir")
-        self.action_excluir_usuario.setShortcut("F3")
+        self.action_excluir_usuario.setShortcut("F4")
 
         self.action_cadastrar_produto = QAction(tela_principal)
         self.action_cadastrar_produto.setText("Cadastrar")
-        self.action_cadastrar_produto.setShortcut("F4")
+        self.action_cadastrar_produto.setShortcut("F5")
 
         self.action_alterar_produto = QAction(tela_principal)
         self.action_alterar_produto.setText("Alterar")
-        self.action_alterar_produto.setShortcut("F5")
+        self.action_alterar_produto.setShortcut("F6")
 
         self.action_excluir_produto = QAction(tela_principal)
         self.action_excluir_produto.setText("Excluir")
-        self.action_excluir_produto.setShortcut("F6")
+        self.action_excluir_produto.setShortcut("F7")
 
         self.action_relatorio_vendas_total = QAction(tela_principal)
         self.action_relatorio_vendas_total.setText("Relatório Total")
-        self.action_relatorio_vendas_total.setShortcut("F7")
+        self.action_relatorio_vendas_total.setShortcut("F8")
 
         self.action_relatorio_vendas_dia = QAction(tela_principal)
         self.action_relatorio_vendas_dia.setText("Relatório Dia")
-        self.action_relatorio_vendas_dia.setShortcut("F8")
+        self.action_relatorio_vendas_dia.setShortcut("F9")
 
         self.action_relatorio_produtos_completo = QAction(tela_principal)
         self.action_relatorio_produtos_completo.setText("Relatório Completo")
-        # self.action_relatorio_produtos_completo.setShortcut("F6")
+        self.action_relatorio_produtos_completo.setShortcut("F10")
 
         self.action_relatorio_produtos_customizado = QAction(tela_principal)
         self.action_relatorio_produtos_customizado.setText("Relatório por Produto")
@@ -259,6 +264,7 @@ class Ui_tela_principal(object):
         font_header.setBold(True)
 
         self.tabela = QTableWidget(self.centralwidget)
+        self.tabela.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabela.setColumnCount(7)
         __qtablewidgetitem = QTableWidgetItem()
         __qtablewidgetitem.setText('Código')
@@ -304,6 +310,7 @@ class Ui_tela_principal(object):
 
         self.menu_usuarios = QMenu(self.menubar)
         self.menu_usuarios.setTitle("Usuários")
+        self.menu_usuarios.addAction(self.action_deslogar)
         self.menu_usuarios.addAction(self.action_cadastrar_usuario)
         self.menu_usuarios.addAction(self.action_alterar_usuario)
         self.menu_usuarios.addAction(self.action_excluir_usuario)
@@ -352,6 +359,9 @@ class CriarTelaPrincipal(QMainWindow, Ui_tela_principal):
             self.menu_usuarios.setEnabled(True)
             self.menu_relatorio_produtos.setEnabled(True)
             self.menu_relatorios_vendas.setEnabled(True)
+        self.texto_codigo_produto.setText('')
+        self.spin_box_quantidade.setValue(0)
+        self.double_spin_box_preco_venda.setValue(0)
         self.show()
     # mostrar_tela
 

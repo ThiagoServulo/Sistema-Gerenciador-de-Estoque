@@ -452,7 +452,7 @@ def busca_dados_vendas(data: str) -> list[namedtuple]:
     if data == '':
         dados = executa_query(f"SELECT * FROM vendas")
     else:
-        dados = executa_query(f"SELECT * FROM vendas WHERE data_venda={data}")
+        dados = executa_query(f"SELECT * FROM vendas WHERE data_venda='{data}'")
 
     for dado in dados:
         tupla_venda = namedtuple('tupla_dado', 'codigo, descricao, quantidade, preco_compra, preco_venda, '
