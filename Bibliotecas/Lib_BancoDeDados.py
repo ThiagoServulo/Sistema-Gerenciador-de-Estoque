@@ -44,6 +44,8 @@ def conectar_servidor() -> sqlite3.Connection:
                  )
 
     return conn
+
+
 # conectar_servidor
 
 
@@ -59,6 +61,8 @@ def executa_query(query: str) -> list:
     dados = cursor.fetchall()
     desconectar_servidor(conn)
     return dados
+
+
 # executa_query
 
 
@@ -74,6 +78,8 @@ def executa_comando(comando: str) -> int:
     conn.commit()
     desconectar_servidor(conn)
     return cursor.rowcount
+
+
 # executa_comando
 
 
@@ -84,6 +90,8 @@ def desconectar_servidor(conn: sqlite3.Connection) -> None:
     :return: None
     """
     conn.close()
+
+
 # desconectar_servidor
 
 
@@ -99,6 +107,8 @@ def data_atual_banco() -> str:
         return ''
 
     return dados[0][0]
+
+
 # data_atual_banco
 
 
@@ -128,6 +138,8 @@ def inserir_usuario_banco(nome: str, email: str, senha: str, cargo: int) -> int:
         return 1
     else:
         return 0
+
+
 # inserir_usuario
 
 
@@ -143,6 +155,8 @@ def excluir_usuario_banco(matricula: int) -> bool:
         return True
     else:
         return False
+
+
 # excluir_usuario
 
 
@@ -159,6 +173,8 @@ def verificar_usuario_existe(nome: str) -> bool:
         return False
 
     return True
+
+
 # verificar_usuario_existe
 
 
@@ -176,6 +192,8 @@ def nome_usuario(matricula: int) -> str:
         return ''
 
     return dados[0][0]
+
+
 # nome_usuario
 
 
@@ -192,6 +210,8 @@ def num_matricula_usuario(nome: str) -> int:
         return -1
 
     return converter_id_para_matricula(dados[0][0])
+
+
 # num_matricula_usuario
 
 
@@ -213,6 +233,8 @@ def verificar_dados_usuario(matricula: int, senha_login: str) -> int:
 
     senha_criptografada = dados[0][0]
     return verificar_senha(senha_login, senha_criptografada)
+
+
 # verificar_dados_usuario
 
 
@@ -232,6 +254,8 @@ def cargo_usuario(matricula: int) -> int:
         return -1
 
     return dados[0][0]
+
+
 # cargo_usuario
 
 
@@ -249,6 +273,8 @@ def alterar_cargo_banco(matricula: int, cargo: int) -> bool:
         return True
     else:
         return False
+
+
 # alterar_cargo
 
 
@@ -278,6 +304,8 @@ def inserir_produto_banco(descricao: str, marca: str, fabricante: str, quantidad
         return 1
     else:
         return 0
+
+
 # inserir_produto_banco
 
 
@@ -294,6 +322,8 @@ def verificar_produto_existe(descricao: str) -> bool:
         return False
 
     return True
+
+
 # verificar_produto_existe
 
 
@@ -310,6 +340,8 @@ def descricao_produto(id_produto: int) -> str:
         return ''
 
     return dados[0][0]
+
+
 # descricao_produto
 
 
@@ -325,6 +357,8 @@ def maior_id_produto() -> int:
         return -1
 
     return dados[0][0]
+
+
 # maior_id_produto
 
 
@@ -340,6 +374,8 @@ def quantidade_produtos_cadastrados() -> int:
         return -1
 
     return dados[0][0]
+
+
 # quantidade_produtos_cadastrados
 
 
@@ -357,6 +393,8 @@ def busca_produto_por_id(id_produto: int) -> tuple:
         return ()
 
     return dados[0]
+
+
 # busca_produto_por_id
 
 
@@ -374,6 +412,8 @@ def excluir_produto_banco(id_produto: int) -> bool:
             return True
 
     return False
+
+
 # excluir_produto_banco
 
 
@@ -395,6 +435,8 @@ def alterar_produto_banco(id_produto: int, quantidade: int) -> bool:
                 return True
 
     return False
+
+
 # alterar_produto_banco
 
 
@@ -406,6 +448,8 @@ def quantidade_produto(id_produto: int) -> int:
     """
     dados = executa_query(f"SELECT quantidade FROM produtos WHERE id={id_produto}")
     return dados[0][0]
+
+
 # quantidade_produto
 
 
@@ -437,6 +481,8 @@ def adiciona_venda_banco(id_produto: int, quantidade: int, preco_venda: float, m
             return True
 
     return False
+
+
 # adiciona_venda_banco
 
 
@@ -464,7 +510,30 @@ def busca_dados_vendas(data: str) -> list[namedtuple]:
                                         lucro_percentual=lucro_percentual, data=dado[5], funcionario=dado[6]))
 
     return lista_vendas
+
+
 # busca_dados_vendas
+
+# --------------------------------------------------------------------------------------------------
+# --------------------------------------- Funções de Produtos --------------------------------------
+# --------------------------------------------------------------------------------------------------
+
+
+def busca_dados_produtos() -> list[namedtuple]:
+    lista_produtos = []
+    dados = executa_query(f"SELECT * FROM produtos")
+
+    for dado in dados:
+        tupla_produto = namedtuple('tupla_dado', 'codigo, descricao, marca, fabricante, quantidade, '
+                                                 'preco_compra, valor_estoque, data')
+        valor = dado[4] * dado[5]
+        lista_produtos.append(tupla_produto(codigo=dado[0], descricao=dado[1], marca=dado[2],
+                                            fabricante=dado[3], quantidade=dado[4],
+                                            preco_compra=dado[5], valor_estoque=valor, data=dado[6]))
+
+    return lista_produtos
+# busca_dados_vendas
+
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------

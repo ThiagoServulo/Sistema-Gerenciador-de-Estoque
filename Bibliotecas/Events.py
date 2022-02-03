@@ -59,6 +59,7 @@ class Eventos:
         self.tela_principal.action_relatorio_vendas_total.triggered.connect(self.gerar_relatorio_vendas_total)
         self.tela_principal.action_relatorio_vendas_dia.triggered.\
             connect(self.tela_selecionar_data_relatorio_vendas.mostrar_tela)
+        self.tela_principal.action_relatorio_produtos_completo.triggered.connect(self.gerar_relatorio_produtos_total)
 
     # __init__
 
@@ -503,6 +504,9 @@ class Eventos:
                                                              f"<font face={self.fonte} size={self.tamanho}>"
                                                              f"Erro ao adicionar a venda do produto {descricao}"
                                                              f"</font>")
+            self.tela_principal.texto_codigo_produto.setText('')
+            self.tela_principal.spin_box_quantidade.setValue(0)
+            self.tela_principal.double_spin_box_preco_venda.setValue(0)
     # adicionar_venda
 
     def gerar_relatorio_vendas_total(self) -> None:
@@ -565,7 +569,7 @@ class Eventos:
                 if gera_relatorio_csv_vendas(2, nome_arquivo, lista_vendas):
                     QMessageBox.information(self.tela_selecionar_data_relatorio_vendas, 'Sucesso',
                                             f"<font face={self.fonte} size={self.tamanho}>"
-                                            f"Relatório gerado com sucesso</font>")
+                                            f"Relatório de vendas gerado com sucesso</font>")
                     self.tela_selecionar_data_relatorio_vendas.close()
                 else:
                     QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
@@ -576,3 +580,32 @@ class Eventos:
                                  f"<font face={self.fonte} size={self.tamanho}>"
                                  f"A data escolhida deve ser menor ou igual a atual</font>")
     # gerar_relatorio_vendas_dia
+
+    def gerar_relatorio_produtos_total(self) -> None:
+        """
+        Função que gera o relatório total de produtos
+        :return: Nenhum
+        """
+        opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Deseja gerar relatório total de produtos?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if opcao == QMessageBox.Yes:
+            lista_produtos = busca_dados_produtos()
+            if not lista_produtos:
+                QMessageBox.critical(self.tela_principal, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Nenhuma produto cadastrado</font>")
+                return
+            data = data_atual_banco()
+            data = data.replace('/', '_')
+            nome_arquivo = f'relatorio_estoque_completo_{data}'
+            if gera_relatorio_csv_produtos(1, nome_arquivo, lista_produtos):
+                QMessageBox.information(self.tela_principal, 'Sucesso',
+                                        f"<font face={self.fonte} size={self.tamanho}>"
+                                        f"Relatório de estoque gerado com sucesso</font>")
+            else:
+                QMessageBox.critical(self.tela_principal, 'Erro',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Erro ao gerar relatório de estoque</font>")
+    # gerar_relatorio_produtos_total

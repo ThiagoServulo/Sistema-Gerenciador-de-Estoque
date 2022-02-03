@@ -53,3 +53,48 @@ def gera_relatorio_csv_vendas(tipo_relatorio: Literal[1, 2], nome_arquivo: str, 
         print('PermissionError')
         return False
 # gera_relatorio_csv_vendas
+
+
+def gera_relatorio_csv_produtos(tipo_relatorio: Literal[1, 3], nome_arquivo: str, lista_produtos: list[namedtuple]) -> bool:
+    """
+    Função que gera o relatório de estoque em um arquivo csv
+    :param tipo_relatorio: tipo de relatório que será gerado
+                           1 - relatório total
+                           2 - relatório por produto
+                           3 - relatório por quantidade
+    :param nome_arquivo: nome do arquivo csv que será gerado
+    :param lista_produtos: lista condendo os dados dos produtos em estoque
+    :return: True - se o relatório for gerado com sucesso
+             False - se ocorrer um erro ao gerar o relatório
+    """
+    quantidade_total = valor_estoque_total = 0
+    if tipo_relatorio == 1:
+        os.makedirs('.\\Relatorios\\Relatorios_estoque_completo', exist_ok=True)
+        path = f'.\\Relatorios\\Relatorios_estoque_completo\\{nome_arquivo}.csv'
+    elif tipo_relatorio == 3:
+        os.makedirs('.\\Relatorios\\Relatorios_estoque_quantidade', exist_ok=True)
+        path = f'.\\Relatorios\\Relatorios_estoque_quantidade\\{nome_arquivo}.csv'
+    else:
+        path = 0  # TODO: fazer o else
+    try:
+        with open(path, 'w', newline='') as arquivo:
+            escritor = writer(arquivo, delimiter=';')
+            escritor.writerow(['Código', 'Descrição', 'Marca', 'Fabricante', 'Quantidade',
+                               'Preço Compra', 'Valor em Estoque', 'Data'])
+
+            for produto in lista_produtos:
+                quantidade_total += produto.quantidade
+                valor_estoque_total += produto.valor_estoque
+                escritor.writerow([produto.codigo, produto.descricao, produto.marca, produto.fabricante,
+                                   produto.quantidade, str(produto.preco_compra).replace('.', ','),
+                                   str(produto.valor_estoque).replace('.', ','), produto.data])
+
+            escritor.writerow(['Total', '-', '-', '-', quantidade_total, '-',
+                               str(valor_estoque_total).replace('.', ','), '-'])
+            return True
+        return False
+
+    except PermissionError:
+        print('PermissionError')
+        return False
+# gera_relatorio_csv_produtos
