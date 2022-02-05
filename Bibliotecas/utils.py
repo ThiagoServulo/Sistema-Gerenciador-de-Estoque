@@ -1,4 +1,5 @@
 from passlib.hash import pbkdf2_sha256 as cryp
+from typing import Literal
 import datetime
 
 
@@ -135,3 +136,19 @@ def valida_data(dia: int, mes: int, ano: int) -> bool:
     else:
         return False
 # valida_data
+
+
+def converte_simbolo_tipo_para_string(simbolo: Literal['>', '<', '=']) -> str:
+    """
+    Função que converte um símbolo em uma string com seu significado
+    :param simbolo: símbolo que será transcrito
+    :return: string contendo o nome do símbolo informado
+    """
+    if simbolo == '>':
+        tipo = 'maior'
+    elif simbolo == '<':
+        tipo = 'menor'
+    else:
+        tipo = 'igual'
+    return tipo
+# converte_simbolo_tipo_para_string

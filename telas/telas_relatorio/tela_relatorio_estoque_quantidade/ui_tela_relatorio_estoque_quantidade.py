@@ -1,65 +1,72 @@
-# -*- coding: utf-8 -*-
-
-################################################################################
-## Form generated from reading UI file 'tela_relatorio_estoque_quantidadeEsApIm.ui'
-##
-## Created by: Qt User Interface Compiler version 5.15.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+import sys
 
 
 class Ui_tela_relatorio_estoque_quantidade(object):
+    def __init__(self):
+        self.spin_box_quantidade = QSpinBox()
+        self.label_quantidade = QLabel()
+        self.combo_box_tipo = QComboBox()
+        self.label_tipo = QLabel()
+        self.botao_gerar_relatorio_estoque_quantidade = QPushButton()
+    # __init__
+
     def setupUi(self, tela_relatorio_estoque_quantidade):
-        if not tela_relatorio_estoque_quantidade.objectName():
-            tela_relatorio_estoque_quantidade.setObjectName(u"tela_relatorio_estoque_quantidade")
-        tela_relatorio_estoque_quantidade.resize(327, 166)
-        self.botao_gerar_relatorio_estoque_quantidade = QPushButton(tela_relatorio_estoque_quantidade)
-        self.botao_gerar_relatorio_estoque_quantidade.setObjectName(u"botao_gerar_relatorio_estoque_quantidade")
-        self.botao_gerar_relatorio_estoque_quantidade.setGeometry(QRect(80, 110, 151, 41))
+        icon = QIcon()
+        icon.addFile(u"icones/icone_relatorio.png", QSize(), QIcon.Normal, QIcon.Off)
+
         font = QFont()
+        font.setFamily(u"MS Shell Dlg 2")
         font.setPointSize(12)
+
+        tela_relatorio_estoque_quantidade.resize(208, 124)
+        tela_relatorio_estoque_quantidade.setMaximumSize(208, 124)
+        tela_relatorio_estoque_quantidade.setMinimumSize(208, 124)
+        tela_relatorio_estoque_quantidade.setWindowTitle(u"Relatório de Estoque")
+        tela_relatorio_estoque_quantidade.setWindowIcon(icon)
+
+        self.botao_gerar_relatorio_estoque_quantidade = QPushButton(tela_relatorio_estoque_quantidade)
+        self.botao_gerar_relatorio_estoque_quantidade.setGeometry(QRect(30, 70, 151, 41))
         self.botao_gerar_relatorio_estoque_quantidade.setFont(font)
-        self.botao_gerar_relatorio_estoque_quantidade.setText(u"Gerar Relat\u00f3rio")
+        self.botao_gerar_relatorio_estoque_quantidade.setText(u"Gerar Relatório")
+
         self.label_tipo = QLabel(tela_relatorio_estoque_quantidade)
-        self.label_tipo.setObjectName(u"label_tipo")
-        self.label_tipo.setGeometry(QRect(10, 71, 131, 21))
+        self.label_tipo.setGeometry(QRect(10, 41, 131, 21))
         self.label_tipo.setFont(font)
         self.label_tipo.setText(u"Tipo:")
-        self.label_codigo_produto = QLabel(tela_relatorio_estoque_quantidade)
-        self.label_codigo_produto.setObjectName(u"label_codigo_produto")
-        self.label_codigo_produto.setGeometry(QRect(10, 11, 121, 21))
-        self.label_codigo_produto.setFont(font)
-        self.label_codigo_produto.setText(u"C\u00f3digo Produto:")
-        self.texto_matricula = QLineEdit(tela_relatorio_estoque_quantidade)
-        self.texto_matricula.setObjectName(u"texto_matricula")
-        self.texto_matricula.setGeometry(QRect(140, 10, 171, 21))
-        self.texto_matricula.setFont(font)
-        self.texto_matricula.setText(u"")
-        self.texto_matricula.setMaxLength(20)
+
         self.combo_box_tipo = QComboBox(tela_relatorio_estoque_quantidade)
-        self.combo_box_tipo.setObjectName(u"combo_box_tipo")
-        self.combo_box_tipo.setGeometry(QRect(140, 70, 81, 22))
+        self.combo_box_tipo.setGeometry(QRect(110, 40, 81, 22))
+        self.combo_box_tipo.addItems([">", "<", "="])
+
         self.label_quantidade = QLabel(tela_relatorio_estoque_quantidade)
-        self.label_quantidade.setObjectName(u"label_quantidade")
-        self.label_quantidade.setGeometry(QRect(10, 40, 121, 21))
+        self.label_quantidade.setGeometry(QRect(10, 10, 121, 21))
         self.label_quantidade.setFont(font)
         self.label_quantidade.setText(u"Quantidade:")
+
         self.spin_box_quantidade = QSpinBox(tela_relatorio_estoque_quantidade)
-        self.spin_box_quantidade.setObjectName(u"spin_box_quantidade")
-        self.spin_box_quantidade.setGeometry(QRect(140, 40, 81, 21))
+        self.spin_box_quantidade.setGeometry(QRect(110, 10, 81, 21))
         self.spin_box_quantidade.setFont(font)
-
-        self.retranslateUi(tela_relatorio_estoque_quantidade)
-
-        QMetaObject.connectSlotsByName(tela_relatorio_estoque_quantidade)
+        self.spin_box_quantidade.setMaximum(9999)
     # setupUi
 
-    def retranslateUi(self, tela_relatorio_estoque_quantidade):
-        tela_relatorio_estoque_quantidade.setWindowTitle(QCoreApplication.translate("tela_relatorio_estoque_quantidade", u"Relat\u00f3rio Quantidade", None))
-    # retranslateUi
 
+class CriarTelaRelatorioProdutoQuantidade(QMainWindow, Ui_tela_relatorio_estoque_quantidade):
+    def __init__(self):
+        super(CriarTelaRelatorioProdutoQuantidade, self).__init__()
+        self.setupUi(self)
+    # __init__
+
+    def mostrar_tela(self):
+        self.spin_box_quantidade.setValue(0)
+        self.show()
+    # mostrar_tela
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = CriarTelaRelatorioProdutoQuantidade()
+    window.mostrar_tela()
+    sys.exit(app.exec_())

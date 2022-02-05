@@ -55,27 +55,25 @@ def gera_relatorio_csv_vendas(tipo_relatorio: Literal[1, 2], nome_arquivo: str, 
 # gera_relatorio_csv_vendas
 
 
-def gera_relatorio_csv_produtos(tipo_relatorio: Literal[1, 3], nome_arquivo: str, lista_produtos: list[namedtuple]) -> bool:
+def gera_relatorio_csv_produtos(tipo_relatorio: Literal[1, 2], nome_arquivo: str, lista_produtos: list[namedtuple]) -> bool:
     """
     Função que gera o relatório de estoque em um arquivo csv
     :param tipo_relatorio: tipo de relatório que será gerado
                            1 - relatório total
-                           2 - relatório por produto
-                           3 - relatório por quantidade
+                           2 - relatório por quantidade
     :param nome_arquivo: nome do arquivo csv que será gerado
     :param lista_produtos: lista condendo os dados dos produtos em estoque
     :return: True - se o relatório for gerado com sucesso
              False - se ocorrer um erro ao gerar o relatório
     """
-    quantidade_total = valor_estoque_total = 0
+    quantidade_total = valor_estoque_total = path = 0
     if tipo_relatorio == 1:
         os.makedirs('.\\Relatorios\\Relatorios_estoque_completo', exist_ok=True)
         path = f'.\\Relatorios\\Relatorios_estoque_completo\\{nome_arquivo}.csv'
-    elif tipo_relatorio == 3:
+    elif tipo_relatorio == 2:
         os.makedirs('.\\Relatorios\\Relatorios_estoque_quantidade', exist_ok=True)
         path = f'.\\Relatorios\\Relatorios_estoque_quantidade\\{nome_arquivo}.csv'
-    else:
-        path = 0  # TODO: fazer o else
+
     try:
         with open(path, 'w', newline='') as arquivo:
             escritor = writer(arquivo, delimiter=';')

@@ -8,6 +8,8 @@ from telas.telas_produto.tela_excluir_produto.ui_tela_excluir_produto import Cri
 from telas.telas_produto.tela_alterar_produto.ui_tela_alterar_produto import CriarTelaAlterarProduto
 from telas.telas_relatorio.tela_relatorio_vendas_data.ui_tela_relatorios_venda_data \
     import CriarTelaSelecionarDataRelatorioVendas
+from telas.telas_relatorio.tela_relatorio_estoque_quantidade.ui_tela_relatorio_estoque_quantidade \
+    import CriarTelaRelatorioProdutoQuantidade
 from Bibliotecas.Lib_BancoDeDados import *
 from Bibliotecas.Lib_Arquivos_CSV import *
 from PySide2.QtWidgets import *
@@ -18,8 +20,13 @@ class Eventos:
     Classe eventos contém todos os eventos do programa e suas tratativas
     """
 
-    fonte = 'MS Shell Dlg 2'
-    tamanho = 4
+    # Macros
+    RELATORIO_ESTOQUE_TOTAL: int = 1
+    RELATORIO_ESTOQUE_QUANTIDADE: int = 2
+
+    # Variáveis Globais
+    fonte: str = 'MS Shell Dlg 2'
+    tamanho: int = 4
 
     def __init__(self):
         self.tela_login = CriarTelaLogin()
@@ -47,6 +54,10 @@ class Eventos:
         self.tela_selecionar_data_relatorio_vendas = CriarTelaSelecionarDataRelatorioVendas()
         self.tela_selecionar_data_relatorio_vendas.botao_confirmar.clicked.connect(self.gerar_relatorio_vendas_dia)
 
+        self.tela_selecionar_quantidade_relatorio_estoque = CriarTelaRelatorioProdutoQuantidade()
+        self.tela_selecionar_quantidade_relatorio_estoque.botao_gerar_relatorio_estoque_quantidade\
+            .clicked.connect(self.gerar_relatorio_produtos_quantidade)
+
         self.tela_principal = CriarTelaPrincipal()
         self.tela_principal.botao_adicionar_venda.clicked.connect(self.adicionar_venda)
         self.tela_principal.action_deslogar.triggered.connect(self.log_out)
@@ -59,8 +70,9 @@ class Eventos:
         self.tela_principal.action_relatorio_vendas_total.triggered.connect(self.gerar_relatorio_vendas_total)
         self.tela_principal.action_relatorio_vendas_dia.triggered.\
             connect(self.tela_selecionar_data_relatorio_vendas.mostrar_tela)
+        self.tela_principal.action_relatorio_produtos_quantidade.triggered.\
+            connect(self.tela_selecionar_quantidade_relatorio_estoque.mostrar_tela)
         self.tela_principal.action_relatorio_produtos_completo.triggered.connect(self.gerar_relatorio_produtos_total)
-
     # __init__
 
     def iniciar(self) -> None:
@@ -297,6 +309,13 @@ class Eventos:
             QMessageBox.critical(self.tela_excluir_usuario, 'Erro',
                                  f"<font face={self.fonte} size={self.tamanho}>"
                                  f"Matrícula inválida</font>")
+            self.tela_excluir_usuario.close()
+            return
+        if str(matricula) == self.tela_principal.texto_matricula.text():
+            QMessageBox.critical(self.tela_excluir_usuario, 'Erro',
+                                 f"<font face={self.fonte} size={self.tamanho}>"
+                                 f"Você não pode excluir o usuário que está logado</font>")
+            self.tela_excluir_usuario.close()
             return
         nome = nome_usuario(matricula)
         if verificar_usuario_existe(nome):
@@ -327,7 +346,7 @@ class Eventos:
         :return: Nenhum
         """
         quantidade_produtos = quantidade_produtos_cadastrados()
-        if quantidade_produtos == -1:
+        if quantidade_produtos <= 0:
             return
         self.tela_principal.tabela.setRowCount(quantidade_produtos)
         produto_maior_id = maior_id_produto()
@@ -342,7 +361,6 @@ class Eventos:
             for num_coluna in range(7):
                 self.tela_principal.tabela.setItem(num_linha, num_coluna,
                                                    QTableWidgetItem(str(tupla_produto[num_coluna])))
-                # todo: .setFlags(PySide2.QtCore.Qt.ItemIsEnabled)
             num_linha += 1
         self.tela_principal.tabela.setColumnWidth(1, self.tela_principal.maior_coluna_1 * 10)
         self.tela_principal.tabela.setColumnWidth(2, self.tela_principal.maior_coluna_2 * 12)
@@ -519,14 +537,13 @@ class Eventos:
                                      f"Deseja gerar relatório total de vendas?",
                                      QMessageBox.Yes | QMessageBox.No)
         if opcao == QMessageBox.Yes:
-            data = data_atual_banco()
             lista_vendas = busca_dados_vendas('')
             if not lista_vendas:
                 QMessageBox.critical(self.tela_principal, 'Erro',
                                      f"<font face={self.fonte} size={self.tamanho}>"
                                      f"Nenhuma venda encontrada</font>")
                 return
-            data = data.replace('/', '_')
+            data = data_atual_formatada()
             nome_arquivo = f'relatorio_vendas_total_{data}'
             if gera_relatorio_csv_vendas(1, nome_arquivo, lista_vendas):
                 QMessageBox.information(self.tela_principal, 'Sucesso',
@@ -570,7 +587,6 @@ class Eventos:
                     QMessageBox.information(self.tela_selecionar_data_relatorio_vendas, 'Sucesso',
                                             f"<font face={self.fonte} size={self.tamanho}>"
                                             f"Relatório de vendas gerado com sucesso</font>")
-                    self.tela_selecionar_data_relatorio_vendas.close()
                 else:
                     QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
                                          f"<font face={self.fonte} size={self.tamanho}>"
@@ -579,6 +595,7 @@ class Eventos:
             QMessageBox.critical(self.tela_selecionar_data_relatorio_vendas, 'Erro',
                                  f"<font face={self.fonte} size={self.tamanho}>"
                                  f"A data escolhida deve ser menor ou igual a atual</font>")
+        self.tela_selecionar_data_relatorio_vendas.close()
     # gerar_relatorio_vendas_dia
 
     def gerar_relatorio_produtos_total(self) -> None:
@@ -597,10 +614,9 @@ class Eventos:
                                      f"<font face={self.fonte} size={self.tamanho}>"
                                      f"Nenhuma produto cadastrado</font>")
                 return
-            data = data_atual_banco()
-            data = data.replace('/', '_')
+            data = data_atual_formatada()
             nome_arquivo = f'relatorio_estoque_completo_{data}'
-            if gera_relatorio_csv_produtos(1, nome_arquivo, lista_produtos):
+            if gera_relatorio_csv_produtos(self.RELATORIO_ESTOQUE_TOTAL, nome_arquivo, lista_produtos):
                 QMessageBox.information(self.tela_principal, 'Sucesso',
                                         f"<font face={self.fonte} size={self.tamanho}>"
                                         f"Relatório de estoque gerado com sucesso</font>")
@@ -609,3 +625,35 @@ class Eventos:
                                      f"<font face={self.fonte} size={self.tamanho}>"
                                      f"Erro ao gerar relatório de estoque</font>")
     # gerar_relatorio_produtos_total
+
+    def gerar_relatorio_produtos_quantidade(self) -> None:
+        """
+        Função que gera o relatório de estoque de produtos baseado na quantidade e no tipo informados
+        :return: Nenhum
+        """
+        tipo_relatorio = self.tela_selecionar_quantidade_relatorio_estoque.combo_box_tipo.currentText()
+        quantidade = self.tela_selecionar_quantidade_relatorio_estoque.spin_box_quantidade.value()
+        opcao = QMessageBox.question(self.tela_principal, 'Confirmar',
+                                     f"<font face={self.fonte} size={self.tamanho}>"
+                                     f"Deseja gerar relatório de produtos por quantidade?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if opcao == QMessageBox.Yes:
+            tupla_produtos = busca_dados_produtos_por_quantidade(quantidade, tipo_relatorio)
+            if not tupla_produtos:
+                QMessageBox.information(self.tela_selecionar_quantidade_relatorio_estoque, 'Alerta',
+                                        f"<font face={self.fonte} size={self.tamanho}>"
+                                        f"Não foram encontrados produtos com as condições informadas</font>")
+            else:
+                data = data_atual_formatada()
+                tipo_relatorio_str = converte_simbolo_tipo_para_string(tipo_relatorio)
+                nome_arquivo = f'relatorio_estoque_quantidade_{tipo_relatorio_str}_{quantidade}_{data}'
+                if gera_relatorio_csv_produtos(self.RELATORIO_ESTOQUE_QUANTIDADE, nome_arquivo, tupla_produtos):
+                    QMessageBox.information(self.tela_selecionar_quantidade_relatorio_estoque, 'Sucesso',
+                                            f"<font face={self.fonte} size={self.tamanho}>"
+                                            f"Relatório de estoque por quantidade gerado com sucesso</font>")
+                else:
+                    QMessageBox.critical(self.tela_selecionar_quantidade_relatorio_estoque, 'Erro',
+                                         f"<font face={self.fonte} size={self.tamanho}>"
+                                         f"Erro ao gerar relatório de estoque por quantidade</font>")
+        self.tela_selecionar_quantidade_relatorio_estoque.close()
+    # gerar_relatorio_produtos_quantidade

@@ -1,6 +1,7 @@
 import sqlite3
 from Bibliotecas.utils import *
 from collections import namedtuple
+from typing import Literal
 
 
 # --------------------------------------------------------------------------------------------------
@@ -110,6 +111,20 @@ def data_atual_banco() -> str:
 
 
 # data_atual_banco
+
+
+def data_atual_formatada() -> str:
+    """
+    Função que retorna a data atual do servidor de banco de dados formatada com underline
+    :return: string contendo a data atual no formato: 'dd_mm_aaaa'
+             se ocorrer algum erro ao buscar a data será retornado uma string vazia: ''
+    """
+    data = data_atual_banco()
+    data = data.replace('/', '_')
+    return data
+
+
+# data_atual_formatada
 
 
 # --------------------------------------------------------------------------------------------------
@@ -520,6 +535,10 @@ def busca_dados_vendas(data: str) -> list[namedtuple]:
 
 
 def busca_dados_produtos() -> list[namedtuple]:
+    """
+    Função que busca todos os dados dos produtos cadastrados
+    :return: lista de named tuples contendo os dados dos produtos
+    """
     lista_produtos = []
     dados = executa_query(f"SELECT * FROM produtos")
 
@@ -532,8 +551,38 @@ def busca_dados_produtos() -> list[namedtuple]:
                                             preco_compra=dado[5], valor_estoque=valor, data=dado[6]))
 
     return lista_produtos
-# busca_dados_vendas
+# busca_dados_produtos
 
+
+def busca_dados_produtos_por_quantidade(quantidade: int, tipo: Literal['>', '<', '=']) -> list[namedtuple]:
+    """
+    Função que busca os produtos pela quantidade informada
+    :param quantidade: número de produtos em estoque
+    :param tipo: tipo de busca
+                 > - busca os produtos com quantidade maior que informada
+                 < - busca os produtos com quantidade menor que informada
+                 = - busca os produtos com quantidade igual a informada
+    :return: lista de named tuples contendo os dados dos produtos
+    """
+    lista_produtos = dados = []
+
+    if tipo == '>':
+        dados = executa_query(f"SELECT * FROM produtos WHERE quantidade>{quantidade}")
+    elif tipo == '<':
+        dados = executa_query(f"SELECT * FROM produtos WHERE quantidade<{quantidade}")
+    elif tipo == '=':
+        dados = executa_query(f"SELECT * FROM produtos WHERE quantidade={quantidade}")
+
+    for dado in dados:
+        tupla_produto = namedtuple('tupla_dado', 'codigo, descricao, marca, fabricante, quantidade, '
+                                                 'preco_compra, valor_estoque, data')
+        valor = dado[4] * dado[5]
+        lista_produtos.append(tupla_produto(codigo=dado[0], descricao=dado[1], marca=dado[2],
+                                            fabricante=dado[3], quantidade=dado[4],
+                                            preco_compra=dado[5], valor_estoque=valor, data=dado[6]))
+
+    return lista_produtos
+# busca_dados_produtos_por_quantidade
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
